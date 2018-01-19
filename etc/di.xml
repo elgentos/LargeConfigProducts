@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:ObjectManager/etc/config.xsd">
+
+    <type name="Magento\Framework\Console\CommandList">
+        <arguments>
+            <argument name="commands" xsi:type="array">
+                <item name="elgentos_largeconfigproducts_prewarmer" xsi:type="object">Elgentos\LargeConfigProducts\Console\Command\PrewarmerCommand</item>
+            </argument>
+        </arguments>
+    </type>
+
+    <type name="Magento\ConfigurableProduct\Pricing\Price\LowestPriceOptionsProvider">
+        <plugin sortOrder="1" name="elgentosLargeConfigProductsLowestPriceOptionsProvider"
+                type="Elgentos\LargeConfigProducts\Plugin\Pricing\Price\LowestPriceOptionsProviderPlugin"/>
+    </type>
+    <preference for="Magento\Framework\View\TemplateEngine\Xhtml\Template"
+                type="Elgentos\LargeConfigProducts\View\TemplateEngine\Xhtml\Template"></preference>
+</config>

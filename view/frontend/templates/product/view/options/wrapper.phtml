@@ -1,0 +1,22 @@
+<?php
+/**
+ * Copyright © Magento, Inc. All rights reserved.
+ * See COPYING.txt for license details.
+ */
+?>
+<?php
+$required = '';
+if ($block->hasRequiredOptions()) {
+    $required = ' data-hasrequired="' . __('* Required Fields') . '"';
+}
+?>
+<div class="product-options-wrapper" id="product-options-wrapper"<?= /* @escapeNotVerified */ $required ?>>
+    <div id="product-options-spinner">
+        <img src="<?= /* @escapeNotVerified */ $block->getViewFileUrl('images/loader-1.gif') ?>"
+             alt="<?= /* @escapeNotVerified */ __('Loading...') ?>" width="15" height="15">
+        <span><?= /* @escapeNotVerified */ __('Please wait, loading product options..') ?></span>
+    </div>
+    <div class="fieldset" tabindex="0" style="display:none">
+        <?= $block->getChildHtml('', true) ?>
+    </div>
+</div>

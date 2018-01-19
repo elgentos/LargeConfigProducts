@@ -1,0 +1,11 @@
+<page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:View/Layout:etc/page_configuration.xsd">
+    <body>
+        <referenceContainer name="product.info.main">
+            <referenceBlock name="product.info.options.wrapper"> <!-- product_options_wrapper -->
+                <action method="setTemplate">
+                    <argument name="template" xsi:type="string">Elgentos_LargeConfigProducts::product/view/options/wrapper.phtml</argument>
+                </action>
+            </referenceBlock>
+        </referenceContainer>
+    </body>
+</page>
