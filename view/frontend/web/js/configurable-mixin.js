@@ -7,9 +7,6 @@ define([
         $.widget('mage.configurable', widget, {
             // Load jsonConfig through AJAX call instead of in-line
             _create: function () {
-                if (!_.isEmpty(this.options.spConfig)) {
-                    return;
-                }
                 var that = this;
                 var productData = this._determineProductData();
                 $.ajax({
