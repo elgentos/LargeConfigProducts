@@ -16,4 +16,6 @@ We have created workaround for both problems. In the frontend, we offload fetchi
 
 When the product page is loaded and there is no cache entry, it will create it then. This will of course take longer than pre-warming the cache entries.
 
+In the backend [we use DOMDocument's and the `LIBXML_PARSEHUGE` constant](https://github.com/elgentos/LargeConfigProducts/blob/0.1.3/View/TemplateEngine/Xhtml/Template.php) to handle the extremely large XML structure.
+
 This extension is free to use. If you find any bugs, please let us know. It has been tested on Magento 2.2.2 on PHP 7.0.
