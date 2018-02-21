@@ -10,6 +10,7 @@ use Credis_Client;
 use Magento\Catalog\Api\ProductRepositoryInterface;
 use Magento\Framework\Api\SearchCriteriaBuilder;
 use Magento\Framework\App\Area;
+use Magento\Framework\App\State;
 use Magento\Framework\App\DeploymentConfig;
 use Magento\Framework\Registry;
 use Magento\Framework\View\Element\BlockFactory;
@@ -27,6 +28,7 @@ class PrewarmerCommand extends Command
     protected $productRepository;
     protected $searchCriteriaBuilder;
     protected $_coreRegistry;
+    const PREWARM_CURRENT_STORE = 'PREWARM_CURRENT_STORE';
     /**
      * @var BlockFactory
      */
@@ -47,6 +49,10 @@ class PrewarmerCommand extends Command
      * @var RendererInterface
      */
     private $phraseRenderer;
+    /**
+     * @var State
+     */
+    private $state;
 
     /**
      * PrewarmerCommand constructor.
@@ -58,6 +64,7 @@ class PrewarmerCommand extends Command
      * @param StoreManagerInterface $storeManager
      * @param Emulation $emulation
      * @param RendererInterface $phraseRenderer
+     * @param State $state
      */
     public function __construct(
         ProductRepositoryInterface $productRepository,
@@ -67,7 +74,8 @@ class PrewarmerCommand extends Command
         BlockFactory $blockFactory,
         StoreManagerInterface $storeManager,
         Emulation $emulation,
-        RendererInterface $phraseRenderer
+        RendererInterface $phraseRenderer,
+        State $state
     ) {
         parent::__construct();
         $this->productRepository = $productRepository;
@@ -82,6 +90,7 @@ class PrewarmerCommand extends Command
         $this->storeManager = $storeManager;
         $this->emulation = $emulation;
         $this->phraseRenderer = $phraseRenderer;
+        $this->state = $state;
     }
     /**
      *
@@ -90,7 +99,8 @@ class PrewarmerCommand extends Command
     {
         $this->setName('lcp:prewarm');
         $this->setDescription('Prewarm product options JSON for Large Configurable Products');
-        $this->addOption('products', 'p', InputOption::VALUE_OPTIONAL, 'Product ID(s) to prewarm (comma-seperated)');
+        $this->addOption('products', 'p', InputOption::VALUE_OPTIONAL, 'Product IDs to prewarm (comma-seperated)');
+        $this->addOption('storecodes', 's', InputOption::VALUE_OPTIONAL, 'Storecodes to prewarm (comma-seperated)');
     }
 
     /**
@@ -104,11 +114,14 @@ class PrewarmerCommand extends Command
             throw new \Exception('No Redis configured as default cache frontend!');
         }
 
+        $this->state->setAreaCode(Area::AREA_FRONTEND);
+
         // Set phrase renderer for correct translations, see https://www.atwix.com/magento-2/cli-scripts-translations/
         Phrase::setRenderer($this->phraseRenderer);
 
         $output->writeln('Prewarming...');
 
+        /** Filter products */
         if ($input->getOption('products')) {
             $productIdsToWarm = $input->getOption('products');
             $productIdsToWarm = explode(',', $productIdsToWarm);
@@ -119,14 +132,31 @@ class PrewarmerCommand extends Command
         $this->searchCriteriaBuilder->addFilter('type_id', 'configurable');
         $searchCriteria = $this->searchCriteriaBuilder->create();
 
-        /** @var \Magento\Catalog\Api\Data\ProductInterface[] $products */
-        $products = $this->productRepository->getList($searchCriteria)->getItems();
+        /** Filter stores */
+        $storeCodesToWarm = false;
+        if ($input->getOption('storecodes')) {
+            $storeCodesToWarm = $input->getOption('storecodes');
+            $storeCodesToWarm = explode(',', $storeCodesToWarm);
+            $storeCodesToWarm = array_map('trim', $storeCodesToWarm);
+            $storeCodesToWarm = array_filter($storeCodesToWarm);
+        }
+
         /** @var \Magento\Store\Api\Data\StoreInterface[] $stores */
         $stores = $this->storeManager->getStores();
 
         $i = 1;
-        foreach ($products as $product) {
-            foreach ($stores as $store) {
+        foreach ($stores as $store) {
+            if ($storeCodesToWarm && !in_array($store->getCode(), $storeCodesToWarm)) continue;
+
+            /** We set the current store ID in the Redis database because we need to retrieve it
+             *  in AttributeOptionProviderPlugin. We can't use registry for this because of the bug we're actually
+             *  'solving' with this. If anyone has a better idea, please PR.
+             */
+            $this->credis->set(self::PREWARM_CURRENT_STORE, $store->getId());
+
+            /** @var \Magento\Catalog\Api\Data\ProductInterface[] $products */
+            $products = $this->productRepository->getList($searchCriteria)->getItems();
+            foreach ($products as $product) {
                 // Use store emulation to let Magento fetch the correct translations for in the JSON object
                 $this->emulation->startEnvironmentEmulation($store->getId(), Area::AREA_FRONTEND, true);
                 $cacheKey = 'LCP_PRODUCT_INFO_' . $store->getId() . '_' . $product->getId();
@@ -155,6 +185,7 @@ class PrewarmerCommand extends Command
      */
     public function getJsonConfig($currentProduct)
     {
+        /* Set product in registry */
         if ($this->_coreRegistry->registry('product')) {
             $this->_coreRegistry->unregister('product');
         }
