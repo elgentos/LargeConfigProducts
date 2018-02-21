@@ -101,6 +101,7 @@ class PrewarmerCommand extends Command
         $this->setDescription('Prewarm product options JSON for Large Configurable Products');
         $this->addOption('products', 'p', InputOption::VALUE_OPTIONAL, 'Product IDs to prewarm (comma-seperated)');
         $this->addOption('storecodes', 's', InputOption::VALUE_OPTIONAL, 'Storecodes to prewarm (comma-seperated)');
+        $this->addOption('force', 'f', InputOption::VALUE_OPTIONAL, 'Force prewarming even if record already exists', false);
     }
 
     /**
@@ -161,7 +162,7 @@ class PrewarmerCommand extends Command
                 $this->emulation->startEnvironmentEmulation($store->getId(), Area::AREA_FRONTEND, true);
                 $cacheKey = 'LCP_PRODUCT_INFO_' . $store->getId() . '_' . $product->getId();
 
-                if (!$this->credis->exists($cacheKey)) {
+                if (!$this->credis->exists($cacheKey) || $input->getOption('force')) {
                     $output->writeln('Prewarming ' . $product->getSku() . ' for store ' . $store->getCode() . ' (' . $i . '/' . count($products) . ')');
                     $productOptionInfo = $this->getJsonConfig($product);
                     $this->credis->set($cacheKey, $productOptionInfo);
