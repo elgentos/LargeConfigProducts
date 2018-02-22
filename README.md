@@ -19,3 +19,14 @@ When the product page is loaded and there is no cache entry, it will create it t
 In the backend [we use DOMDocument's and the `LIBXML_PARSEHUGE` constant](https://github.com/elgentos/LargeConfigProducts/blob/0.1.3/View/TemplateEngine/Xhtml/Template.php) to handle the extremely large XML structure.
 
 This extension is free to use. If you find any bugs, please let us know. It has been tested on Magento 2.2.2 on PHP 7.0.
+
+## Console command
+This extension comes with a console command, `php bin/magento lcp:prewarm`. This console command pre-warms the JSON blobs so your customers don't have to wait for the cache to build up on the first hit on the product page.
+
+The command has a few options;
+
+`--products 123,456,789` - define for which product ID(s) you want to run the prewarmer
+
+`--storecodes english,dutch,german` - define for which store code(s) you want to run the prewarmer
+
+`--force true` - force the prewarmer to overwrite existing entries. Otherwise the prewarmer will skip product/storecode combinations that already have an entry.
