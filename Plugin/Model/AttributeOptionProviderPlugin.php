@@ -41,9 +41,11 @@ class AttributeOptionProviderPlugin
          * stack. This plugin uses the store ID found in the Redis DB to re-set the current store so the translated
          * attribute option labels are retrieved correctly.
          */
-        $prewarmCurrentStore = $this->credis->get(PrewarmerCommand::PREWARM_CURRENT_STORE);
-        if ($prewarmCurrentStore) {
-            $this->storeManager->setCurrentStore($prewarmCurrentStore);
+        if (PHP_SAPI == 'cli') {
+            $prewarmCurrentStore = $this->credis->get(PrewarmerCommand::PREWARM_CURRENT_STORE);
+            if ($prewarmCurrentStore) {
+                $this->storeManager->setCurrentStore($prewarmCurrentStore);
+            }
         }
     }
 }
