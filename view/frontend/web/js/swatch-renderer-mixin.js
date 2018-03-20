@@ -7,7 +7,7 @@ define([
         $.widget('mage.SwatchRenderer', widget, {
             // Load jsonConfig through AJAX call instead of in-line
             _init: function () {
-                if (!_.isEmpty(this.options.jsonConfig)) {
+                if (!_.isNull(this.options.jsonConfig)) {
                     return;
                 }
                 var that = this;
