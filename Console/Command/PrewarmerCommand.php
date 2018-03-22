@@ -120,7 +120,8 @@ class PrewarmerCommand extends Command
         // Set phrase renderer for correct translations, see https://www.atwix.com/magento-2/cli-scripts-translations/
         Phrase::setRenderer($this->phraseRenderer);
 
-        $output->writeln('Prewarming...');
+        // Echo out instead of using output->writeln due to 'Area code not set' error. This error will not be shown (for some reason) when there has been output sent.
+        echo 'Prewarming' . PHP_EOL;
 
         /** Filter products */
         if ($input->getOption('products')) {
