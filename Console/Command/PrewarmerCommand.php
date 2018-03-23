@@ -149,6 +149,8 @@ class PrewarmerCommand extends Command
         $i = 1;
         foreach ($stores as $store) {
             if ($storeCodesToWarm && !in_array($store->getCode(), $storeCodesToWarm)) continue;
+            // Use store emulation to let Magento fetch the correct translations for in the JSON object
+            $this->emulation->startEnvironmentEmulation($store->getId(), Area::AREA_FRONTEND, true);
 
             /** We set the current store ID in the Redis database because we need to retrieve it
              *  in AttributeOptionProviderPlugin. We can't use registry for this because of the bug we're actually
@@ -159,8 +161,6 @@ class PrewarmerCommand extends Command
             /** @var \Magento\Catalog\Api\Data\ProductInterface[] $products */
             $products = $this->productRepository->getList($searchCriteria)->getItems();
             foreach ($products as $product) {
-                // Use store emulation to let Magento fetch the correct translations for in the JSON object
-                $this->emulation->startEnvironmentEmulation($store->getId(), Area::AREA_FRONTEND, true);
                 $cacheKey = 'LCP_PRODUCT_INFO_' . $store->getId() . '_' . $product->getId();
 
                 if (!$this->credis->exists($cacheKey) || $input->getOption('force')) {
@@ -170,9 +170,9 @@ class PrewarmerCommand extends Command
                 } else {
                     $output->writeln($product->getSku() . ' is already prewarmed for store ' . $store->getCode() . ' (' . $i . '/' . count($products) . ')');
                 }
-                $this->emulation->stopEnvironmentEmulation();
+                $i++;
             }
-            $i++;
+            $this->emulation->stopEnvironmentEmulation();
         }
 
         $output->writeln('Done prewarming');
