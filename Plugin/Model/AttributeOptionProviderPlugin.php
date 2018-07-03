@@ -7,7 +7,7 @@
  */
 namespace Elgentos\LargeConfigProducts\Plugin\Model;
 
-use Elgentos\LargeConfigProducts\Console\Command\PrewarmerCommand;
+use Elgentos\LargeConfigProducts\Model\Prewarmer;
 use Magento\Catalog\Model\ProductFactory;
 use Magento\Framework\App\DeploymentConfig;
 use Magento\Store\Model\StoreManagerInterface;
@@ -42,7 +42,7 @@ class AttributeOptionProviderPlugin
          * attribute option labels are retrieved correctly.
          */
         if (PHP_SAPI == 'cli') {
-            $prewarmCurrentStore = $this->credis->get(PrewarmerCommand::PREWARM_CURRENT_STORE);
+            $prewarmCurrentStore = $this->credis->get(Prewarmer::PREWARM_CURRENT_STORE);
             if ($prewarmCurrentStore) {
                 $this->storeManager->setCurrentStore($prewarmCurrentStore);
             }
