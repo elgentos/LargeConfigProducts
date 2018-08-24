@@ -9,6 +9,12 @@
         </arguments>
     </type>
 
+    <type name="\Elgentos\LargeConfigProducts\Console\Command\PrewarmerCommand">
+        <arguments>
+            <argument name="prewarmer" xsi:type="object">Elgentos\LargeConfigProducts\Model\Prewarmer\Proxy</argument>
+        </arguments>
+    </type>
+
     <type name="Magento\ConfigurableProduct\Pricing\Price\LowestPriceOptionsProvider">
         <plugin sortOrder="1" name="elgentosLargeConfigProductsLowestPriceOptionsProvider"
                 type="Elgentos\LargeConfigProducts\Plugin\Pricing\Price\LowestPriceOptionsProviderPlugin"/>
