@@ -4,13 +4,14 @@ namespace Elgentos\LargeConfigProducts\Model;
 
 use Credis_Client;
 use Magento\Catalog\Api\ProductRepositoryInterface;
+use Magento\ConfigurableProduct\Block\Product\View\Type\Configurable as ProductTypeConfigurable;
+use Magento\Framework\Api\SearchCriteriaBuilder;
 use Magento\Framework\App\Area;
 use Magento\Framework\App\DeploymentConfig;
 use Magento\Framework\Registry;
 use Magento\Framework\View\Element\BlockFactory;
-use Magento\Store\Model\StoreManagerInterface;
-use Magento\Framework\Api\SearchCriteriaBuilder;
 use Magento\Store\Model\App\Emulation;
+use Magento\Store\Model\StoreManagerInterface;
 
 class Prewarmer {
     protected $credis;
@@ -80,12 +81,20 @@ class Prewarmer {
 
         $output = [];
 
-        $this->searchCriteriaBuilder->addFilter('entity_id', $productIdsToWarm, 'in');
+        if (\is_array($productIdsToWarm) && \count($productIdsToWarm) > 0) {
+            $this->searchCriteriaBuilder->addFilter('entity_id', $productIdsToWarm, 'in');
+        }
         $this->searchCriteriaBuilder->addFilter('type_id', 'configurable');
         $searchCriteria = $this->searchCriteriaBuilder->create();
 
         /** @var \Magento\Store\Api\Data\StoreInterface[] $stores */
         $stores = $this->storeManager->getStores();
+
+        /** Use the customer-group for guests. It is currently not possible to prewarm the production options with
+         * catalog price rules baesd on the customer group as condition.
+         * Magento uses the Customer Session to do calculate the CatalogRulePrice and this seems hard to simulate from the CLI
+         */
+        $customerGroupId = 0;
 
         $i = 1;
         foreach ($stores as $store) {
@@ -102,7 +111,7 @@ class Prewarmer {
             /** @var \Magento\Catalog\Api\Data\ProductInterface[] $products */
             $products = $this->productRepository->getList($searchCriteria)->getItems();
             foreach ($products as $product) {
-                $cacheKey = 'LCP_PRODUCT_INFO_' . $store->getId() . '_' . $product->getId();
+                $cacheKey = 'LCP_PRODUCT_INFO_' . $store->getId() . '_' . $product->getId() . '_' . $customerGroupId;
 
                 if (!$this->credis->exists($cacheKey) || $force) {
                     $output[] = 'Prewarming ' . $product->getSku() . ' for store ' . $store->getCode() . ' (' . $i . '/' . count($products) . ')';
@@ -135,7 +144,8 @@ class Prewarmer {
         }
         $this->coreRegistry->register('product', $currentProduct);
 
-        $block = $this->blockFactory->createBlock('Magento\ConfigurableProduct\Block\Product\View\Type\Configurable');
+        /** @var ProductTypeConfigurable $block */
+        $block = $this->blockFactory->createBlock(ProductTypeConfigurable::class);
 
         return $block->getJsonConfig();
     }
