@@ -21,8 +21,6 @@ class Prewarmer {
      * @var SearchCriteriaBuilder
      */
     private $searchCriteriaBuilder;
-
-    const PREWARM_CURRENT_STORE = 'PREWARM_CURRENT_STORE';
     /**
      * @var Emulation
      */
@@ -96,17 +94,21 @@ class Prewarmer {
          */
         $customerGroupId = 0;
 
+        /**
+         * Remove stores from array that are not in storeCodesToWarm (if set)
+         */
+        foreach ($stores as $key => $store) {
+            if ($storeCodesToWarm && !in_array($store->getCode(), $storeCodesToWarm)) {
+                unset($stores[$key]);
+            }
+        }
+
         $i = 1;
         foreach ($stores as $store) {
-            if ($storeCodesToWarm && !in_array($store->getCode(), $storeCodesToWarm)) continue;
             // Use store emulation to let Magento fetch the correct translations for in the JSON object
             $this->emulation->startEnvironmentEmulation($store->getId(), Area::AREA_FRONTEND, true);
 
-            /** We set the current store ID in the Redis database because we need to retrieve it
-             *  in AttributeOptionProviderPlugin. We can't use registry for this because of the bug we're actually
-             *  'solving' with this. If anyone has a better idea, please PR.
-             */
-            $this->credis->set(self::PREWARM_CURRENT_STORE, $store->getId());
+            $this->storeManager->setCurrentStore($store->getId());
 
             /** @var \Magento\Catalog\Api\Data\ProductInterface[] $products */
             $products = $this->productRepository->getList($searchCriteria)->getItems();
@@ -114,11 +116,11 @@ class Prewarmer {
                 $cacheKey = 'LCP_PRODUCT_INFO_' . $store->getId() . '_' . $product->getId() . '_' . $customerGroupId;
 
                 if (!$this->credis->exists($cacheKey) || $force) {
-                    $output[] = 'Prewarming ' . $product->getSku() . ' for store ' . $store->getCode() . ' (' . $i . '/' . count($products) . ')';
+                    $output[] = 'Prewarming ' . $product->getSku() . ' for store ' . $store->getCode() . ' (' . $i . '/' . count($stores) . ')';
                     $productOptionInfo = $this->getJsonConfig($product);
                     $this->credis->set($cacheKey, $productOptionInfo);
                 } else {
-                    $output[] = $product->getSku() . ' is already prewarmed for store ' . $store->getCode() . ' (' . $i . '/' . count($products) . ')';
+                    $output[] = $product->getSku() . ' is already prewarmed for store ' . $store->getCode() . ' (' . $i . '/' . count($stores) . ')';
                 }
                 $i++;
             }
