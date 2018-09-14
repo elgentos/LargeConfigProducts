@@ -105,7 +105,11 @@ class Prewarmer {
 
         $i = 1;
         foreach ($stores as $store) {
-            // Use store emulation to let Magento fetch the correct translations for in the JSON object
+            /**
+             * Use store emulation to let Magento fetch the correct translations for in the JSON object
+             * But stop any running store environment emulation first so we can run it
+             */
+            $this->emulation->stopEnvironmentEmulation();
             $this->emulation->startEnvironmentEmulation($store->getId(), Area::AREA_FRONTEND, true);
 
             $this->storeManager->setCurrentStore($store->getId());
