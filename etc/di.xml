@@ -20,5 +20,5 @@
                 type="Elgentos\LargeConfigProducts\Plugin\Pricing\Price\LowestPriceOptionsProviderPlugin"/>
     </type>
     <preference for="Magento\Framework\View\TemplateEngine\Xhtml\Template"
-                type="Elgentos\LargeConfigProducts\View\TemplateEngine\Xhtml\Template"></preference>
+                type="Elgentos\LargeConfigProducts\Model\View\TemplateEngine\Xhtml\Template"></preference>
 </config>

@@ -6,7 +6,7 @@
  * Time: 21:44
  */
 
-namespace Elgentos\LargeConfigProducts\View\TemplateEngine\Xhtml;
+namespace Elgentos\LargeConfigProducts\Model\View\TemplateEngine\Xhtml;
 
 class Template extends \Magento\Framework\View\TemplateEngine\Xhtml\Template {
 
