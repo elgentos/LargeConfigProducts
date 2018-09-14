@@ -4,10 +4,16 @@ namespace Elgentos\LargeConfigProducts\Model;
 
 use Elgentos\LargeConfigProducts\Model\Prewarmer;
 use Rcason\Mq\Api\ConsumerInterface;
+use Symfony\Component\Process\Process;
+use Psr\Log\LoggerInterface;
 
 class Consumer implements ConsumerInterface
 {
+    /**
+     * @var LoggerInterface
+     */
     protected $logger;
+
     /**
      * @var Prewarmer
      */
@@ -16,9 +22,10 @@ class Consumer implements ConsumerInterface
     /**
      * @param \Psr\Log\LoggerInterface $logger
      * @param Prewarmer $prewarmer
+     * @param Process $process
      */
     public function __construct(
-        \Psr\Log\LoggerInterface $logger,
+        LoggerInterface $logger,
         Prewarmer $prewarmer
     ) {
         $this->logger = $logger;
@@ -33,7 +40,9 @@ class Consumer implements ConsumerInterface
         echo sprintf('Processing %s..', $productId) . PHP_EOL;
 
         try {
-            $this->prewarmer->prewarm([$productId], false, true);
+            $process = new Process(sprintf('php bin/magento lcp:prewarm -p %s --force=true', $productId));
+            $process->run();
+            echo $process->getOutput();
         } catch (\Exception $e) {
             $this->logger->critical($e->getMessage());
         }
