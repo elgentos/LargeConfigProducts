@@ -25,6 +25,15 @@ define([
                     $('#product-options-wrapper > .fieldset').show();
                     that.options.jsonConfig = data;
                     that._trueInit();
+
+                    // Preselect option if only 1 option exists
+                    const selectBoxes = document.querySelectorAll('select.swatch-select');
+                    selectBoxes.forEach(function (selectBox) {
+                        if (selectBox.options.length <= 2) {
+                            selectBox.selectedIndex = selectBox.options.length - 1;
+                            $(selectBox).change();
+                        }
+                    });
                 });
             },
 
