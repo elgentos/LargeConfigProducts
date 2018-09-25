@@ -27,7 +27,7 @@ define([
                     that._trueInit();
 
                     // Preselect option if only 1 option exists
-                    const selectBoxes = document.querySelectorAll('select');
+                    const selectBoxes = document.querySelectorAll('select.swatch-select');
                     selectBoxes.forEach(function (selectBox) {
                         if (selectBox.options.length <= 2) {
                             selectBox.selectedIndex = selectBox.options.length - 1;
