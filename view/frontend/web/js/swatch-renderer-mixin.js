@@ -37,6 +37,24 @@ define([
                 });
             },
 
+            updateBaseImage: function (images, context, isInProductView, eventName) {
+                // If no images are set, do not replace existing image
+                if (images.length > 0 && images[0].full == null) {
+                    return;
+                }
+
+                var gallery = context.find(this.options.mediaGallerySelector).data('gallery');
+
+                if (eventName === undefined) {
+                    this.processUpdateBaseImage(images, context, isInProductView, gallery);
+                } else {
+                    context.find(this.options.mediaGallerySelector).on('gallery:loaded', function (loadedGallery) {
+                        loadedGallery = context.find(this.options.mediaGallerySelector).data('gallery');
+                        this.processUpdateBaseImage(images, context, isInProductView, loadedGallery);
+                    }.bind(this));
+                }
+            },
+
             _trueInit: function () {
                 if (_.isEmpty(this.options.jsonConfig.images)) {
                     this.options.useAjax = true;
