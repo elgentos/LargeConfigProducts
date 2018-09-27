@@ -19,6 +19,11 @@
         <plugin sortOrder="1" name="elgentosLargeConfigProductsLowestPriceOptionsProvider"
                 type="Elgentos\LargeConfigProducts\Plugin\Pricing\Price\LowestPriceOptionsProviderPlugin"/>
     </type>
+
+    <type name="Magento\Catalog\Model\Product\Action">
+        <plugin sortOrder="1" name="elgentosLargeConfigProductsAfterUpdateAttributes"
+                type="Elgentos\LargeConfigProducts\Plugin\Product\Action\AfterUpdateAttributesPlugin" />
+    </type>
     <preference for="Magento\Framework\View\TemplateEngine\Xhtml\Template"
-                type="Elgentos\LargeConfigProducts\Model\View\TemplateEngine\Xhtml\Template"></preference>
+                type="Elgentos\LargeConfigProducts\Model\View\TemplateEngine\Xhtml\Template" />
 </config>
