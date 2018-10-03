@@ -2,11 +2,9 @@
     "name": "elgentos/largeconfigproducts",
     "description": "",
     "require": {
-        "php": "~5.5.0|~5.6.0|~7.0.0|~7.1.0|~7.2.0"
-    },
-    "suggest": {
-        "renatocason/magento2-module-mq": "If installed, will be used for the message queue to store config product IDs in to prewarm",
-        "renatocason/magento2-module-mq-mysql": "If installed, will be used for the message queue to store config product IDs in to prewarm"
+        "php": "~5.5.0|~5.6.0|~7.0.0|~7.1.0|~7.2.0",
+        "renatocason/magento2-module-mq": "^1.0",
+        "renatocason/magento2-module-mq-mysql": "^1.1"
     },
     "type": "magento2-module",
     "license": [
