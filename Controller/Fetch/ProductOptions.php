@@ -15,7 +15,7 @@ use Magento\ConfigurableProduct\Block\Product\View\Type\Configurable as ProductT
 use Magento\Customer\Model\Session as CustomerSession;
 use Magento\Framework\App\Action\Action;
 use Magento\Framework\App\Action\Context;
-use Magento\Framework\App\DeploymentConfig;
+use Magento\Framework\App\Config\ScopeConfigInterface;
 use Magento\Framework\Registry;
 use Magento\Store\Model\StoreManagerInterface;
 
@@ -55,21 +55,22 @@ class ProductOptions extends Action
         Context $context,
         ProductRepositoryInterface $productRepository,
         Registry $coreRegistry,
-        DeploymentConfig $deploymentConfig,
         StoreManagerInterface $storeManager,
-        CustomerSession $customerSession
+        CustomerSession $customerSession,
+        ScopeConfigInterface $scopeConfig
     ) {
         parent::__construct($context);
         $this->productRepository = $productRepository;
         $this->_coreRegistry     = $coreRegistry;
         $this->storeManager      = $storeManager;
         $this->customerSession   = $customerSession;
-
-        $cacheSetting = $deploymentConfig->get('cache');
-        if (isset($cacheSetting['frontend']['default']['backend_options']['server'])) {
-            $this->credis = new Credis_Client($cacheSetting['frontend']['default']['backend_options']['server']);
-            $this->credis->select(4);
-        }
+        $this->credis = new Credis_Client(
+            $scopeConfig->getValue('elgentos_largeconfigproducts/prewarm/redis_host') ?? 'localhost',
+            $scopeConfig->getValue('elgentos_largeconfigproducts/prewarm/redis_port') ?? 6379,
+            null,
+            '',
+            $scopeConfig->getValue('elgentos_largeconfigproducts/prewarm/redis_db_index') ?? 4
+        );
     }
 
     /**

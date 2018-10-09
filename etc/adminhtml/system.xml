@@ -1,0 +1,33 @@
+<?xml version="1.0" ?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Config:etc/system_file.xsd">
+    <system>
+        <tab id="elgentos" translate="label" sortOrder="100">
+            <label>Elgentos</label>
+        </tab>
+        <section id="elgentos_largeconfigproducts" translate="label" type="text" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
+            <class>separator-top</class>
+            <label>LargeConfigProducts</label>
+            <tab>elgentos</tab>
+            <resource>Magento_Config::config_admin</resource>
+            <group id="prewarm" translate="label" type="text" sortOrder="100" showInDefault="1" showInWebsite="1" showInStore="1">
+                <label>Prewarm settings</label>
+                <field id="absolute_path" translate="label" type="text" sortOrder="100" showInDefault="1" showInWebsite="0" showInStore="0">
+                    <label>Absolute Path</label>
+                    <comment>The absolute path to your Magento root directory on the server. Needed for prewarming, defaults to '/var/www'.</comment>
+                </field>
+                <field id="redis_host" translate="label" type="text" sortOrder="100" showInDefault="1" showInWebsite="0" showInStore="0">
+                    <label>Redis Host</label>
+                    <comment>Defaults to 'localhost'.</comment>
+                </field>
+                <field id="redis_port" translate="label" type="text" sortOrder="100" showInDefault="1" showInWebsite="0" showInStore="0">
+                    <label>Redis Port</label>
+                    <comment>Defaults to '6379'.</comment>
+                </field>
+                <field id="redis_db_index" translate="label" type="text" sortOrder="100" showInDefault="1" showInWebsite="0" showInStore="0">
+                    <label>Redis Database Index</label>
+                    <comment>Defaults to 4. 1 is probably used for settings and 2 probably for sessions.</comment>
+                </field>
+            </group>
+        </section>
+    </system>
+</config>

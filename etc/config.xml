@@ -1,0 +1,12 @@
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Store:etc/config.xsd">
+    <default>
+        <elgentos_largeconfigproducts>
+            <prewarm>
+                <absolute_path>/var/www</absolute_path>
+                <redis_host>localhost</redis_host>
+                <redis_port>6379</redis_port>
+                <redis_db_index>4</redis_db_index>
+            </prewarm>
+        </elgentos_largeconfigproducts>
+    </default>
+</config>

@@ -7,7 +7,7 @@ use Magento\Catalog\Api\ProductRepositoryInterface;
 use Magento\ConfigurableProduct\Block\Product\View\Type\Configurable as ProductTypeConfigurable;
 use Magento\Framework\Api\SearchCriteriaBuilder;
 use Magento\Framework\App\Area;
-use Magento\Framework\App\DeploymentConfig;
+use Magento\Framework\App\Config\ScopeConfigInterface;
 use Magento\Framework\Registry;
 use Magento\Framework\View\Element\BlockFactory;
 use Magento\Store\Model\App\Emulation;
@@ -26,9 +26,9 @@ class Prewarmer {
      */
     private $emulation;
     /**
-     * @var DeploymentConfig
+     * @var ScopeConfigInterface
      */
-    private $deploymentConfig;
+    private $scopeConfig;
     /**
      * @var Registry
      */
@@ -44,31 +44,33 @@ class Prewarmer {
      * @param StoreManagerInterface $storeManager
      * @param SearchCriteriaBuilder $searchCriteriaBuilder
      * @param Emulation $emulation
-     * @param DeploymentConfig $deploymentConfig
      * @param Registry $coreRegistry
      * @param BlockFactory $blockFactory
+     * @param ScopeConfigInterface $scopeConfig
      */
     public function __construct(
         ProductRepositoryInterface $productRepository,
         StoreManagerInterface $storeManager,
         SearchCriteriaBuilder $searchCriteriaBuilder,
         Emulation $emulation,
-        DeploymentConfig $deploymentConfig,
         Registry $coreRegistry,
-        BlockFactory $blockFactory
+        BlockFactory $blockFactory,
+        ScopeConfigInterface $scopeConfig
     ) {
         $this->productRepository = $productRepository;
-        $cacheSetting = $deploymentConfig->get('cache');
-        if (isset($cacheSetting['frontend']['default']['backend_options']['server'])) {
-            $this->credis = new Credis_Client($cacheSetting['frontend']['default']['backend_options']['server']);
-            $this->credis->select(4);
-        }
         $this->storeManager = $storeManager;
         $this->searchCriteriaBuilder = $searchCriteriaBuilder;
         $this->emulation = $emulation;
-        $this->deploymentConfig = $deploymentConfig;
         $this->coreRegistry = $coreRegistry;
         $this->blockFactory = $blockFactory;
+
+        $this->credis = new Credis_Client(
+            $scopeConfig->getValue('elgentos_largeconfigproducts/prewarm/redis_host') ?? 'localhost',
+            $scopeConfig->getValue('elgentos_largeconfigproducts/prewarm/redis_port') ?? 6379,
+            null,
+            '',
+            $scopeConfig->getValue('elgentos_largeconfigproducts/prewarm/redis_db_index') ?? 4
+        );
     }
 
     public function prewarm($productIdsToWarm, $storeCodesToWarm, $force)
