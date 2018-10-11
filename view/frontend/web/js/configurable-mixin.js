@@ -1,6 +1,7 @@
 define([
-    'jquery'
-], function ($) {
+    'jquery',
+    'mage/url'
+], function ($, url) {
     'use strict';
 
     return function (widget) {
@@ -10,7 +11,7 @@ define([
                 var that = this;
                 var productData = this._determineProductData();
                 $.ajax({
-                    url: BASE_URL + 'lcp/fetch/productOptions',
+                    url: url.build('lcp/fetch/productOptions'),
                     type: 'GET',
                     dataType: 'json',
                     data: {
