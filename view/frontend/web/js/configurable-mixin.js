@@ -10,7 +10,7 @@ define([
                 var that = this;
                 var productData = this._determineProductData();
                 $.ajax({
-                    url: '/lcp/fetch/productOptions',
+                    url: BASE_URL + 'lcp/fetch/productOptions',
                     type: 'GET',
                     dataType: 'json',
                     data: {
