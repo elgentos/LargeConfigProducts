@@ -1,7 +1,6 @@
 define([
-    'jquery',
-    'mage/url'
-], function ($, url) {
+    'jquery'
+], function ($) {
     'use strict';
 
     return function (widget) {
