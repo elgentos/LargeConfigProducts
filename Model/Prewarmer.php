@@ -38,6 +38,8 @@ class Prewarmer {
      */
     private $blockFactory;
 
+    const PREWARM_CURRENT_STORE = 'PREWARM_CURRENT_STORE';
+
     /**
      * PrewarmerCommand constructor.
      * @param ProductRepositoryInterface $productRepository
@@ -113,6 +115,8 @@ class Prewarmer {
              */
             $this->emulation->stopEnvironmentEmulation();
             $this->emulation->startEnvironmentEmulation($store->getId(), Area::AREA_FRONTEND, true);
+
+            $this->credis->set(self::PREWARM_CURRENT_STORE, $store->getId());
 
             $this->storeManager->setCurrentStore($store->getId());
 

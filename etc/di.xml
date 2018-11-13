@@ -26,4 +26,9 @@
     </type>
     <preference for="Magento\Framework\View\TemplateEngine\Xhtml\Template"
                 type="Elgentos\LargeConfigProducts\Model\View\TemplateEngine\Xhtml\Template" />
+
+    <type name="Magento\ConfigurableProduct\Model\AttributeOptionProvider">
+        <plugin sortOrder="1" name="elgentosLargeConfigProductsAttributeOptionProvider"
+                type="Elgentos\LargeConfigProducts\Plugin\Model\AttributeOptionProviderPlugin"/>
+    </type>
 </config>
