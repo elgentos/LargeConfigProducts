@@ -8,14 +8,15 @@
 
 namespace Elgentos\LargeConfigProducts\Pricing\Price;
 
-use Magento\Catalog\Api\Data\ProductInterface;
-use Magento\Catalog\Model\ResourceModel\Product\LinkedProductSelectBuilderInterface;
-use Magento\Framework\App\ResourceConnection;
-use Magento\Catalog\Model\ResourceModel\Product\CollectionFactory;
-use Magento\Framework\App\Config\ScopeConfigInterface;
-use Elgentos\LargeConfigProducts\Model\Prewarmer;
-use Magento\Store\Model\StoreManagerInterface;
 use Credis_Client;
+use Elgentos\LargeConfigProducts\Cache\CredisClientFactory;
+use Elgentos\LargeConfigProducts\Model\Prewarmer;
+use Magento\Catalog\Api\Data\ProductInterface;
+use Magento\Catalog\Model\ResourceModel\Product\CollectionFactory;
+use Magento\Catalog\Model\ResourceModel\Product\LinkedProductSelectBuilderInterface;
+use Magento\Framework\App\Config\ScopeConfigInterface;
+use Magento\Framework\App\ResourceConnection;
+use Magento\Store\Model\StoreManagerInterface;
 
 class LowestPriceOptionsProvider extends \Magento\ConfigurableProduct\Pricing\Price\LowestPriceOptionsProvider
 {
@@ -28,6 +29,7 @@ class LowestPriceOptionsProvider extends \Magento\ConfigurableProduct\Pricing\Pr
      * @var Credis_Client
      */
     protected $credis;
+
     /**
      * @var ResourceConnection
      */
@@ -62,22 +64,14 @@ class LowestPriceOptionsProvider extends \Magento\ConfigurableProduct\Pricing\Pr
         LinkedProductSelectBuilderInterface $linkedProductSelectBuilder,
         CollectionFactory $collectionFactory,
         StoreManagerInterface $storeManager,
-        ScopeConfigInterface $scopeConfig
+        CredisClientFactory $credisClientFactory
     ) {
-        $this->resource = $resourceConnection;
+        $this->resource                   = $resourceConnection;
         $this->linkedProductSelectBuilder = $linkedProductSelectBuilder;
-        $this->collectionFactory = $collectionFactory;
-
-        $this->credis = new Credis_Client(
-            $scopeConfig->getValue('elgentos_largeconfigproducts/prewarm/redis_host') ?? 'localhost',
-            $scopeConfig->getValue('elgentos_largeconfigproducts/prewarm/redis_port') ?? 6379,
-            null,
-            '',
-            $scopeConfig->getValue('elgentos_largeconfigproducts/prewarm/redis_db_index') ?? 4
-        );
-        $this->storeManager = $storeManager;
+        $this->collectionFactory          = $collectionFactory;
+        $this->credis                     = $credisClientFactory->create();
+        $this->storeManager               = $storeManager;
     }
-
 
     /**
      * {@inheritdoc}

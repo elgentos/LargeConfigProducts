@@ -2,12 +2,11 @@
 
 namespace Elgentos\LargeConfigProducts\Model;
 
-use Credis_Client;
+use Elgentos\LargeConfigProducts\Cache\CredisClientFactory;
 use Magento\Catalog\Api\ProductRepositoryInterface;
 use Magento\ConfigurableProduct\Block\Product\View\Type\Configurable as ProductTypeConfigurable;
 use Magento\Framework\Api\SearchCriteriaBuilder;
 use Magento\Framework\App\Area;
-use Magento\Framework\App\Config\ScopeConfigInterface;
 use Magento\Framework\Registry;
 use Magento\Framework\View\Element\BlockFactory;
 use Magento\Store\Model\App\Emulation;
@@ -26,10 +25,6 @@ class Prewarmer {
      */
     private $emulation;
     /**
-     * @var ScopeConfigInterface
-     */
-    private $scopeConfig;
-    /**
      * @var Registry
      */
     private $coreRegistry;
@@ -42,37 +37,33 @@ class Prewarmer {
 
     /**
      * PrewarmerCommand constructor.
+     *
      * @param ProductRepositoryInterface $productRepository
      * @param StoreManagerInterface $storeManager
      * @param SearchCriteriaBuilder $searchCriteriaBuilder
      * @param Emulation $emulation
+     * @param CredisClientFactory $credisClientFactory
      * @param Registry $coreRegistry
      * @param BlockFactory $blockFactory
-     * @param ScopeConfigInterface $scopeConfig
      */
     public function __construct(
         ProductRepositoryInterface $productRepository,
         StoreManagerInterface $storeManager,
         SearchCriteriaBuilder $searchCriteriaBuilder,
         Emulation $emulation,
+        CredisClientFactory $credisClientFactory,
         Registry $coreRegistry,
-        BlockFactory $blockFactory,
-        ScopeConfigInterface $scopeConfig
+        BlockFactory $blockFactory
     ) {
-        $this->productRepository = $productRepository;
-        $this->storeManager = $storeManager;
+        $this->productRepository     = $productRepository;
+        $this->storeManager          = $storeManager;
+        $this->productRepository     = $productRepository;
+        $this->credis                = $credisClientFactory->create();
+        $this->storeManager          = $storeManager;
         $this->searchCriteriaBuilder = $searchCriteriaBuilder;
-        $this->emulation = $emulation;
-        $this->coreRegistry = $coreRegistry;
-        $this->blockFactory = $blockFactory;
-
-        $this->credis = new Credis_Client(
-            $scopeConfig->getValue('elgentos_largeconfigproducts/prewarm/redis_host') ?? 'localhost',
-            $scopeConfig->getValue('elgentos_largeconfigproducts/prewarm/redis_port') ?? 6379,
-            null,
-            '',
-            $scopeConfig->getValue('elgentos_largeconfigproducts/prewarm/redis_db_index') ?? 4
-        );
+        $this->emulation             = $emulation;
+        $this->coreRegistry          = $coreRegistry;
+        $this->blockFactory          = $blockFactory;
     }
 
     public function prewarm($productIdsToWarm, $storeCodesToWarm, $force)
