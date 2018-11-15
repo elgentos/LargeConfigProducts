@@ -15,20 +15,21 @@
         </arguments>
     </type>
 
-    <type name="Magento\ConfigurableProduct\Pricing\Price\LowestPriceOptionsProvider">
-        <plugin sortOrder="1" name="elgentosLargeConfigProductsLowestPriceOptionsProvider"
-                type="Elgentos\LargeConfigProducts\Plugin\Pricing\Price\LowestPriceOptionsProviderPlugin"/>
-    </type>
-
     <type name="Magento\Catalog\Model\Product\Action">
         <plugin sortOrder="1" name="elgentosLargeConfigProductsAfterUpdateAttributes"
                 type="Elgentos\LargeConfigProducts\Plugin\Product\Action\AfterUpdateAttributesPlugin" />
     </type>
+
     <preference for="Magento\Framework\View\TemplateEngine\Xhtml\Template"
                 type="Elgentos\LargeConfigProducts\Model\View\TemplateEngine\Xhtml\Template" />
 
-    <type name="Magento\ConfigurableProduct\Model\AttributeOptionProvider">
-        <plugin sortOrder="1" name="elgentosLargeConfigProductsAttributeOptionProvider"
-                type="Elgentos\LargeConfigProducts\Plugin\Model\AttributeOptionProviderPlugin"/>
+    <preference for="Magento\ConfigurableProduct\Pricing\Price\LowestPriceOptionsProvider"
+                type="Elgentos\LargeConfigProducts\Pricing\Price\LowestPriceOptionsProvider" />
+
+    <type name="Elgentos\LargeConfigProducts\Pricing\Price\LowestPriceOptionsProvider">
+        <arguments>
+            <argument name="linkedProductSelectBuilder" xsi:type="object">Magento\ConfigurableProduct\Model\ResourceModel\Product\LinkedProductSelectBuilder</argument>
+        </arguments>
     </type>
+
 </config>
