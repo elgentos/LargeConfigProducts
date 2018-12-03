@@ -27,13 +27,18 @@ define([
                     that._trueInit();
 
                     // Preselect option if only 1 option exists
-                    const selectBoxes = document.querySelectorAll('select.swatch-select');
-                    selectBoxes.forEach(function (selectBox) {
-                        if (selectBox.options.length <= 2) {
-                            selectBox.selectedIndex = selectBox.options.length - 1;
-                            $(selectBox).change();
+                    var selectBoxes = $('select.swatch-select'), updatedSelectBoxes = [];
+                    selectBoxes.each(function (index, selectBox) {
+                        var $selectBox = $(selectBox);
+
+                        var options = $selectBox.find('option[value!="0"]');
+                        if (options.length <= 1) {
+                            $selectBox.val(options.first().val());
+                            updatedSelectBoxes.push(selectBox);
                         }
                     });
+
+                    $(updatedSelectBoxes).change();
                 });
             },
 
