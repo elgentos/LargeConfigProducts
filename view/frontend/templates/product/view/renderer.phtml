@@ -13,6 +13,7 @@
     {
         "[data-role=swatch-options]": {
             "Magento_Swatches/js/swatch-renderer": {
+                "baseUrl": "<?php echo $block->getBaseUrl(); ?>",
                 "jsonConfig": null<? /* @escapeNotVerified */ //echo $swatchOptions = $block->getJsonConfig() ?>,
                 "jsonSwatchConfig": <?php /* @noEscape */ echo $block->getJsonSwatchConfig(); ?>,
                 "mediaCallback": "<?= /* @escapeNotVerified */ $block->getMediaCallback() ?>",

@@ -20,13 +20,3 @@ if ($block->hasRequiredOptions()) {
         <?= $block->getChildHtml('', true) ?>
     </div>
 </div>
-
-<script type="text/x-magento-init">
-{
-    "#product_addtocart_form": {
-        "configurable": {
-            "baseUrl": "<?php echo $block->getBaseUrl(); ?>"
-        }
-    }
-}
-</script>
