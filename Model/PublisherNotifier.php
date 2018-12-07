@@ -5,7 +5,7 @@ namespace Elgentos\LargeConfigProducts\Model;
 use Magento\Catalog\Model\ProductFactory;
 use Magento\ConfigurableProduct\Model\Product\Type\Configurable;
 use Magento\ConfigurableProduct\Model\ResourceModel\Product\Type\Configurable as ConfigurableResourceModel;
-use Rcason\Mq\Api\PublisherInterface;
+use Magento\Framework\MessageQueue\PublisherInterface;
 use Magento\Framework\Module\Manager as ModuleManager;
 
 class PublisherNotifier {
@@ -50,7 +50,10 @@ class PublisherNotifier {
      * @param $productIds array
      */
     public function notify(array $productIds) {
-        if ($this->moduleManager->isEnabled('Rcason_Mq')) {
+        if (
+            $this->moduleManager->isEnabled('Magento_MessageQueue')
+            && $this->moduleManager->isEnabled('Magento_MysqlMq')
+        ) {
             foreach ($productIds as $productId) {
                 $product = $this->productFactory->create()->load($productId);
                 if ($product->getTypeId() == Configurable::TYPE_CODE) {

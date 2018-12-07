@@ -1,0 +1,10 @@
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework-message-queue:etc/topology.xsd">
+    <exchange name="lcp.prewarm.exchange" type="topic" connection="db">
+        <binding
+                id="LcpProductPrewarm"
+                topic="lcp.product.prewarm"
+                destinationType="queue"
+                destination="lcp_product_prewarm"
+        />
+    </exchange>
+</config>

@@ -1,0 +1,8 @@
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework-message-queue:etc/consumer.xsd">
+    <consumer
+            name="LcpProductPrewarm"
+            queue="lcp_product_prewarm"
+            connection="db"
+            handler="Elgentos\LargeConfigProducts\Model\Consumer::process"
+    />
+</config>

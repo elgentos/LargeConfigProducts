@@ -4,12 +4,10 @@ namespace Elgentos\LargeConfigProducts\Model;
 
 use Elgentos\LargeConfigProducts\Model\Prewarmer;
 use Magento\Framework\App\Config\ScopeConfigInterface;
-use Magento\Mtf\Config\FileResolver\ScopeConfig;
-use Rcason\Mq\Api\ConsumerInterface;
 use Symfony\Component\Process\Process;
 use Psr\Log\LoggerInterface;
 
-class Consumer implements ConsumerInterface
+class Consumer implements \Magento\Framework\MessageQueue\ConsumerInterface
 {
     /**
      * @var LoggerInterface

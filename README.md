@@ -21,6 +21,7 @@ In the backend [we use DOMDocument's and the `LIBXML_PARSEHUGE` constant](https:
 This extension is free to use. If you find any bugs, please let us know. It has been tested on Magento 2.2.2 on PHP 7.0.
 
 ## Console command
+
 This extension comes with a console command, `php bin/magento lcp:prewarm`. This console command pre-warms the JSON blobs so your customers don't have to wait for the cache to build up on the first hit on the product page.
 
 The command has a few options;
@@ -30,3 +31,7 @@ The command has a few options;
 `--storecodes english,dutch,german` - define for which store code(s) you want to run the prewarmer
 
 `--force true` - force the prewarmer to overwrite existing entries. Otherwise the prewarmer will skip product/storecode combinations that already have an entry.
+
+## Message Queue based prewarming
+
+This extension comes with a message queue implementation to do the prewarming automatically when a product has been changed. You can start the message queue by running `php bin/magento queue:consumers:start LcpProductPrewarm`.

@@ -5,6 +5,10 @@
         <sequence>
             <module name="Magento_ConfigurableProduct" />
             <module name="Magento_Framework" />
+            <module name="Magento_Catalog" />
+            <module name="Magento_Swatches" />
+            <module name="Magento_MessageQueue" />
+            <module name="Magento_MysqlMq" />
         </sequence>
     </module>
 </config>
