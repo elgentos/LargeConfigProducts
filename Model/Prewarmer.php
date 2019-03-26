@@ -1,108 +1,133 @@
 <?php
 
-namespace Elgentos\LargeConfigProducts\Controller\Fetch;
+namespace Elgentos\LargeConfigProducts\Model;
 
 use Elgentos\LargeConfigProducts\Cache\CredisClientFactory;
 use Magento\Catalog\Api\ProductRepositoryInterface;
 use Magento\ConfigurableProduct\Block\Product\View\Type\Configurable as ProductTypeConfigurable;
-use Magento\Customer\Model\Session as CustomerSession;
-use Magento\Framework\App\Action\Action;
-use Magento\Framework\App\Action\Context;
-use Magento\Framework\App\Config\ScopeConfigInterface;
+use Magento\Framework\Api\SearchCriteriaBuilder;
+use Magento\Framework\App\Area;
+use Magento\Framework\View\Element\BlockFactory;
+use Magento\Store\Model\App\Emulation;
 use Magento\Store\Model\StoreManagerInterface;
 
-class ProductOptions extends Action
-{
-    protected $helper;
-
-    protected $catalogProduct;
-
+class Prewarmer {
     protected $credis;
-
+    protected $storeManager;
+    protected $productRepository;
     /**
-     * @var ProductRepositoryInterface
+     * @var SearchCriteriaBuilder
      */
-    private $productRepository;
-
+    private $searchCriteriaBuilder;
     /**
-     * @var StoreManagerInterface
+     * @var Emulation
      */
-    private $storeManager;
-
-    /** @var CustomerSession */
-    private $customerSession;
+    private $emulation;
 
     /**
-     * ProductOptions constructor.
+     * @var BlockFactory
+     */
+    private $blockFactory;
+
+    const PREWARM_CURRENT_STORE = 'PREWARM_CURRENT_STORE';
+
+    /**
+     * PrewarmerCommand constructor.
      *
-     * @param Context $context
      * @param ProductRepositoryInterface $productRepository
-     * @param CredisClientFactory $credisClientFactory
      * @param StoreManagerInterface $storeManager
-     * @param CustomerSession $customerSession
-     *
-     * @internal param Product $catalogProduct
+     * @param SearchCriteriaBuilder $searchCriteriaBuilder
+     * @param Emulation $emulation
+     * @param CredisClientFactory $credisClientFactory
+     * @param BlockFactory $blockFactory
      */
     public function __construct(
-        Context $context,
         ProductRepositoryInterface $productRepository,
-        CredisClientFactory $credisClientFactory,
         StoreManagerInterface $storeManager,
-        CustomerSession $customerSession
+        SearchCriteriaBuilder $searchCriteriaBuilder,
+        Emulation $emulation,
+        CredisClientFactory $credisClientFactory,
+        BlockFactory $blockFactory
     ) {
-        parent::__construct($context);
-        $this->productRepository = $productRepository;
-        $this->storeManager      = $storeManager;
-        $this->customerSession   = $customerSession;
-        $this->credis            = $credisClientFactory->create();
+        $this->productRepository     = $productRepository;
+        $this->storeManager          = $storeManager;
+        $this->productRepository     = $productRepository;
+        $this->credis                = $credisClientFactory->create();
+        $this->storeManager          = $storeManager;
+        $this->searchCriteriaBuilder = $searchCriteriaBuilder;
+        $this->emulation             = $emulation;
+        $this->blockFactory          = $blockFactory;
     }
 
-    /**
-     * @throws \Magento\Framework\Exception\NoSuchEntityException
-     */
-    public function execute()
-    {
-        $productId = $this->_request->getParam('productId');
-
-        echo $this->getProductOptionInfo($productId);
-        exit;
-    }
-
-    /**
-     * @param $productId
-     *
-     * @return bool|mixed|string
-     * @throws \Magento\Framework\Exception\NoSuchEntityException
-     */
-    public function getProductOptionInfo($productId)
+    public function prewarm($productIdsToWarm, $storeCodesToWarm, $force)
     {
         if (!$this->credis) {
-            return false;
+            throw new \Exception('No Redis configured as default cache frontend!');
         }
 
-        $storeId         = $this->storeManager->getStore()->getId();
-        $customerGroupId = $this->customerSession->getCustomerGroupId();
+        $output = [];
 
-        $cacheKey = 'LCP_PRODUCT_INFO_' . $storeId . '_' . $productId . '_' . $customerGroupId;
+        if (\is_array($productIdsToWarm) && \count($productIdsToWarm) > 0) {
+            $this->searchCriteriaBuilder->addFilter('entity_id', $productIdsToWarm, 'in');
+        }
+        $this->searchCriteriaBuilder->addFilter('type_id', 'configurable');
+        $searchCriteria = $this->searchCriteriaBuilder->create();
 
-        if ($this->credis->exists($cacheKey)) {
-            return $this->credis->get($cacheKey);
+        /** @var \Magento\Store\Api\Data\StoreInterface[] $stores */
+        $stores = $this->storeManager->getStores();
+
+        /** Use the customer-group for guests. It is currently not possible to prewarm the production options with
+         * catalog price rules baesd on the customer group as condition.
+         * Magento uses the Customer Session to do calculate the CatalogRulePrice and this seems hard to simulate from the CLI
+         */
+        $customerGroupId = 0;
+
+        /**
+         * Remove stores from array that are not in storeCodesToWarm (if set)
+         */
+        foreach ($stores as $key => $store) {
+            if ($storeCodesToWarm && !in_array($store->getCode(), $storeCodesToWarm)) {
+                unset($stores[$key]);
+            }
         }
 
-        $product = $this->productRepository->getById($productId);
-        if ($product->getId()) {
-            $productOptionInfo = $this->getJsonConfig($product);
-            $this->credis->set($cacheKey, $productOptionInfo);
+        $i = 1;
+        foreach ($stores as $store) {
+            /**
+             * Use store emulation to let Magento fetch the correct translations for in the JSON object
+             * But stop any running store environment emulation first so we can run it
+             */
+            $this->emulation->stopEnvironmentEmulation();
+            $this->emulation->startEnvironmentEmulation($store->getId(), Area::AREA_FRONTEND, true);
 
-            return $productOptionInfo;
+            $this->credis->set(self::PREWARM_CURRENT_STORE, $store->getId());
+
+            $this->storeManager->setCurrentStore($store->getId());
+
+            /** @var \Magento\Catalog\Api\Data\ProductInterface[] $products */
+            $products = $this->productRepository->getList($searchCriteria)->getItems();
+            foreach ($products as $product) {
+                $cacheKey = 'LCP_PRODUCT_INFO_' . $store->getId() . '_' . $product->getId() . '_' . $customerGroupId;
+
+                if (!$this->credis->exists($cacheKey) || $force) {
+                    $output[] = 'Prewarming ' . $product->getSku() . ' for store ' . $store->getCode() . ' (' . $i . '/' . count($stores) . ')';
+                    $productOptionInfo = $this->getJsonConfig($product);
+                    $this->credis->set($cacheKey, $productOptionInfo);
+                } else {
+                    $output[] = $product->getSku() . ' is already prewarmed for store ' . $store->getCode() . ' (' . $i . '/' . count($stores) . ')';
+                }
+                $i++;
+            }
+            $this->emulation->stopEnvironmentEmulation();
         }
 
-        return false;
+        return implode(PHP_EOL, $output);
     }
+
+
 
     /**
      * @param $currentProduct
-     *
      * @return mixed
      *
      * See original method at Magento\ConfigurableProduct\Block\Product\View\Type\Configurable::getJsonConfig
@@ -110,8 +135,9 @@ class ProductOptions extends Action
     public function getJsonConfig($currentProduct)
     {
         /** @var ProductTypeConfigurable $block */
-        $block = $this->_view->getLayout()->createBlock(ProductTypeConfigurable::class)->setData('product', $currentProduct);
+        $block = $this->blockFactory->createBlock(ProductTypeConfigurable::class)->setData('product', $currentProduct);
 
         return $block->getJsonConfig();
     }
+
 }
