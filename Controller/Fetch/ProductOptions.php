@@ -16,7 +16,6 @@ use Magento\Customer\Model\Session as CustomerSession;
 use Magento\Framework\App\Action\Action;
 use Magento\Framework\App\Action\Context;
 use Magento\Framework\App\Config\ScopeConfigInterface;
-use Magento\Framework\Registry;
 use Magento\Store\Model\StoreManagerInterface;
 
 class ProductOptions extends Action
@@ -24,8 +23,6 @@ class ProductOptions extends Action
     protected $helper;
 
     protected $catalogProduct;
-
-    protected $_coreRegistry;
 
     protected $credis;
 
@@ -47,8 +44,6 @@ class ProductOptions extends Action
      *
      * @param Context $context
      * @param ProductRepositoryInterface $productRepository
-     * @param Registry $coreRegistry
-     *
      * @param CredisClientFactory $credisClientFactory
      * @param StoreManagerInterface $storeManager
      * @param CustomerSession $customerSession
@@ -58,14 +53,12 @@ class ProductOptions extends Action
     public function __construct(
         Context $context,
         ProductRepositoryInterface $productRepository,
-        Registry $coreRegistry,
         CredisClientFactory $credisClientFactory,
         StoreManagerInterface $storeManager,
         CustomerSession $customerSession
     ) {
         parent::__construct($context);
         $this->productRepository = $productRepository;
-        $this->_coreRegistry     = $coreRegistry;
         $this->storeManager      = $storeManager;
         $this->customerSession   = $customerSession;
         $this->credis            = $credisClientFactory->create();
@@ -123,13 +116,8 @@ class ProductOptions extends Action
      */
     public function getJsonConfig($currentProduct)
     {
-        if ($this->_coreRegistry->registry('product')) {
-            $this->_coreRegistry->unregister('product');
-        }
-        $this->_coreRegistry->register('product', $currentProduct);
-
         /** @var ProductTypeConfigurable $block */
-        $block = $this->_view->getLayout()->createBlock(ProductTypeConfigurable::class);
+        $block = $this->_view->getLayout()->createBlock(ProductTypeConfigurable::class)->setData('product', $currentProduct);
 
         return $block->getJsonConfig();
     }
