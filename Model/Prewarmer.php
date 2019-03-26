@@ -1,12 +1,5 @@
 <?php
 
-/**
- * Created by PhpStorm.
- * User: peterjaap
- * Date: 4-1-18
- * Time: 11:20
- */
-
 namespace Elgentos\LargeConfigProducts\Controller\Fetch;
 
 use Elgentos\LargeConfigProducts\Cache\CredisClientFactory;
