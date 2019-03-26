@@ -7,7 +7,6 @@ use Magento\Catalog\Api\ProductRepositoryInterface;
 use Magento\ConfigurableProduct\Block\Product\View\Type\Configurable as ProductTypeConfigurable;
 use Magento\Framework\Api\SearchCriteriaBuilder;
 use Magento\Framework\App\Area;
-use Magento\Framework\Registry;
 use Magento\Framework\View\Element\BlockFactory;
 use Magento\Store\Model\App\Emulation;
 use Magento\Store\Model\StoreManagerInterface;
@@ -24,10 +23,7 @@ class Prewarmer {
      * @var Emulation
      */
     private $emulation;
-    /**
-     * @var Registry
-     */
-    private $coreRegistry;
+
     /**
      * @var BlockFactory
      */
@@ -43,7 +39,6 @@ class Prewarmer {
      * @param SearchCriteriaBuilder $searchCriteriaBuilder
      * @param Emulation $emulation
      * @param CredisClientFactory $credisClientFactory
-     * @param Registry $coreRegistry
      * @param BlockFactory $blockFactory
      */
     public function __construct(
@@ -52,7 +47,6 @@ class Prewarmer {
         SearchCriteriaBuilder $searchCriteriaBuilder,
         Emulation $emulation,
         CredisClientFactory $credisClientFactory,
-        Registry $coreRegistry,
         BlockFactory $blockFactory
     ) {
         $this->productRepository     = $productRepository;
@@ -62,7 +56,6 @@ class Prewarmer {
         $this->storeManager          = $storeManager;
         $this->searchCriteriaBuilder = $searchCriteriaBuilder;
         $this->emulation             = $emulation;
-        $this->coreRegistry          = $coreRegistry;
         $this->blockFactory          = $blockFactory;
     }
 
@@ -141,14 +134,8 @@ class Prewarmer {
      */
     public function getJsonConfig($currentProduct)
     {
-        /* Set product in registry */
-        if ($this->coreRegistry->registry('product')) {
-            $this->coreRegistry->unregister('product');
-        }
-        $this->coreRegistry->register('product', $currentProduct);
-
         /** @var ProductTypeConfigurable $block */
-        $block = $this->blockFactory->createBlock(ProductTypeConfigurable::class);
+        $block = $this->blockFactory->createBlock(ProductTypeConfigurable::class)->setData('product', $currentProduct);
 
         return $block->getJsonConfig();
     }
