@@ -4,6 +4,7 @@ namespace Elgentos\LargeConfigProducts\Model;
 
 use Elgentos\LargeConfigProducts\Cache\CredisClientFactory;
 use Magento\Catalog\Api\ProductRepositoryInterface;
+use Magento\Catalog\Model\Indexer\Product\Price as PriceIndexer;
 use Magento\ConfigurableProduct\Block\Product\View\Type\Configurable as ProductTypeConfigurable;
 use Magento\Framework\Api\SearchCriteriaBuilder;
 use Magento\Framework\App\Area;
@@ -12,6 +13,10 @@ use Magento\Store\Model\App\Emulation;
 use Magento\Store\Model\StoreManagerInterface;
 
 class Prewarmer {
+    /**
+     * @var PriceIndexer
+     */
+    public $priceIndexer;
     protected $credis;
     protected $storeManager;
     protected $productRepository;
@@ -40,6 +45,7 @@ class Prewarmer {
      * @param Emulation $emulation
      * @param CredisClientFactory $credisClientFactory
      * @param BlockFactory $blockFactory
+     * @param PriceIndexer $priceIndexer
      */
     public function __construct(
         ProductRepositoryInterface $productRepository,
@@ -47,7 +53,8 @@ class Prewarmer {
         SearchCriteriaBuilder $searchCriteriaBuilder,
         Emulation $emulation,
         CredisClientFactory $credisClientFactory,
-        BlockFactory $blockFactory
+        BlockFactory $blockFactory,
+        PriceIndexer $priceIndexer
     ) {
         $this->productRepository     = $productRepository;
         $this->storeManager          = $storeManager;
@@ -57,6 +64,7 @@ class Prewarmer {
         $this->searchCriteriaBuilder = $searchCriteriaBuilder;
         $this->emulation             = $emulation;
         $this->blockFactory          = $blockFactory;
+        $this->priceIndexer          = $priceIndexer;
     }
 
     public function prewarm($productIdsToWarm, $storeCodesToWarm, $force)
@@ -68,6 +76,9 @@ class Prewarmer {
         $output = [];
 
         if (\is_array($productIdsToWarm) && \count($productIdsToWarm) > 0) {
+            // Reindex prices for these products to avoid race-conditions where the prewarmer is ran before indexing prices
+            $this->priceIndexer->executeList($productIdsToWarm);
+            // Add to search criteria builder
             $this->searchCriteriaBuilder->addFilter('entity_id', $productIdsToWarm, 'in');
         }
         $this->searchCriteriaBuilder->addFilter('type_id', 'configurable');
