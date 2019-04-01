@@ -34,6 +34,12 @@ define([
                             $(selectBox).change();
                         }
                     });
+
+                    // Preselect swatch if only 1 swatch exists
+                    const selectSwatch = document.querySelectorAll('.swatch-option');
+                    if($(selectSwatch).length == 1) {
+                        $(selectSwatch).trigger("click");
+                    }
                 });
             },
 
