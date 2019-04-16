@@ -2,17 +2,20 @@
 
 namespace Elgentos\LargeConfigProducts\Observer;
 
-use Elgentos\LargeConfigProducts\Model\PublisherNotifier;
 use Magento\Framework\Event\ObserverInterface;
+use Magento\Framework\Indexer\IndexerRegistry;
 
 class ProductSaveAfter implements ObserverInterface
 {
+    private $indexer;
+
     /**
      * ProductSaveAfter constructor.
-     * @param PublisherNotifier $publisherNotifier
+     * @param IndexerRegistry $indexerRegistry
      */
-    public function __construct(PublisherNotifier $publisherNotifier) {
-        $this->publisherNotifier = $publisherNotifier;
+    public function __construct(IndexerRegistry $indexerRegistry)
+    {
+        $this->indexer = $indexerRegistry->get('elgentos_lcp_prewarm');
     }
 
     /**
@@ -20,7 +23,10 @@ class ProductSaveAfter implements ObserverInterface
      */
     public function execute(
         \Magento\Framework\Event\Observer $observer
-    ) {
-        $this->publisherNotifier->notify([$observer->getProduct()->getId()]);
+    )
+    {
+        if (!$this->indexer->isScheduled()) {
+            $this->indexer->reindexRow($observer->getProduct()->getId());
+        }
     }
 }

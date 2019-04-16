@@ -2,17 +2,20 @@
 
 namespace Elgentos\LargeConfigProducts\Plugin\Product\Action;
 
-use Elgentos\LargeConfigProducts\Model\PublisherNotifier;
 use Magento\Catalog\Model\Product\Action as ProductAction;
+use Magento\Framework\Indexer\IndexerRegistry;
 
 class AfterUpdateAttributesPlugin {
 
+    private $indexer;
+
     /**
      * AfterUpdateAttributesPlugin constructor.
-     * @param PublisherNotifier $publisherNotifier
+     * @param IndexerRegistry $indexerRegistry
      */
-    public function __construct(PublisherNotifier $publisherNotifier) {
-        $this->publisherNotifier = $publisherNotifier;
+    public function __construct(IndexerRegistry $indexerRegistry)
+    {
+        $this->indexer = $indexerRegistry->get('elgentos_lcp_prewarm');
     }
 
     /**
@@ -30,7 +33,9 @@ class AfterUpdateAttributesPlugin {
         $attrData,
         $storeId
     ) {
-        $this->publisherNotifier->notify($productIds);
+        if (!$this->indexer->isScheduled()) {
+            $this->indexer->reindexList($productIds);
+        }
 
         return $action;
     }

@@ -15,6 +15,11 @@
         </arguments>
     </type>
 
+<!--     Not sure if this one is even needed, comment it out for now -->
+<!--    <type name="Magento\CatalogInventory\Model\ResourceModel\Stock\Item">-->
+<!--        <plugin name="elgentosLCPStockItemPlugin" type="Elgentos\LargeConfigProducts\Plugin\StockItemSaveAround"/>-->
+<!--    </type>-->
+
     <type name="Magento\Catalog\Model\Product\Action">
         <plugin sortOrder="1" name="elgentosLargeConfigProductsAfterUpdateAttributes"
                 type="Elgentos\LargeConfigProducts\Plugin\Product\Action\AfterUpdateAttributesPlugin" />

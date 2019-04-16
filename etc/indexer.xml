@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:Indexer/etc/indexer.xsd">
+    <indexer id="elgentos_lcp_prewarm" view_id="elgentos_lcp_prewarm" class="Elgentos\LargeConfigProducts\Model\Indexer\Prewarm">
+        <title translate="true">Large Config Products prewarmer</title>
+        <description translate="true">
+            Adds products to the LCP message queue to be prewarmed.
+        </description>
+    </indexer>
+</config>
