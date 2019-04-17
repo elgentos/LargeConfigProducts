@@ -33,13 +33,4 @@
     <preference for="Magento\Framework\View\TemplateEngine\Xhtml\Template"
                 type="Elgentos\LargeConfigProducts\Model\View\TemplateEngine\Xhtml\Template" />
 
-    <preference for="Magento\ConfigurableProduct\Pricing\Price\LowestPriceOptionsProvider"
-                type="Elgentos\LargeConfigProducts\Pricing\Price\LowestPriceOptionsProvider" />
-
-    <type name="Elgentos\LargeConfigProducts\Pricing\Price\LowestPriceOptionsProvider">
-        <arguments>
-            <argument name="linkedProductSelectBuilder" xsi:type="object">Magento\ConfigurableProduct\Model\ResourceModel\Product\LinkedProductSelectBuilder</argument>
-        </arguments>
-    </type>
-
 </config>
