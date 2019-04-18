@@ -11,6 +11,8 @@ use Magento\Framework\App\Area;
 use Magento\Framework\View\Element\BlockFactory;
 use Magento\Store\Model\App\Emulation;
 use Magento\Store\Model\StoreManagerInterface;
+use Magento\Framework\App\Cache\Manager as CacheManager;
+use Magento\Framework\App\Cache\Type\Collection as CacheTypeCollection;
 
 class Prewarmer {
     /**
@@ -28,6 +30,11 @@ class Prewarmer {
      * @var Emulation
      */
     private $emulation;
+
+    /**
+     * @var CacheManager
+     */
+    private $cacheManger;
 
     /**
      * @var BlockFactory
@@ -54,7 +61,8 @@ class Prewarmer {
         Emulation $emulation,
         CredisClientFactory $credisClientFactory,
         BlockFactory $blockFactory,
-        PriceIndexer $priceIndexer
+        PriceIndexer $priceIndexer,
+        CacheManager $cacheManager
     ) {
         $this->productRepository     = $productRepository;
         $this->storeManager          = $storeManager;
@@ -65,6 +73,7 @@ class Prewarmer {
         $this->emulation             = $emulation;
         $this->blockFactory          = $blockFactory;
         $this->priceIndexer          = $priceIndexer;
+        $this->cacheManager          = $cacheManager;
     }
 
     public function prewarm($productIdsToWarm, $storeCodesToWarm, $force)
@@ -101,6 +110,9 @@ class Prewarmer {
                 unset($stores[$key]);
             }
         }
+
+        // Clean colllections cache type, otherwise Magento will fetch the old prices
+        $this->cacheManager->clean([CacheTypeCollection::TYPE_IDENTIFIER]);
 
         $i = 1;
         foreach ($stores as $store) {
