@@ -8,44 +8,48 @@
 
 namespace Elgentos\LargeConfigProducts\Plugin\Model;
 
-use Elgentos\LargeConfigProducts\Cache\CredisClientFactory;
-use Elgentos\LargeConfigProducts\Model\Prewarmer;
+use Elgentos\LargeConfigProducts\Model\StoreIdStatic;
 use Magento\Store\Model\StoreManagerInterface;
+
+/**
+ * Class AttributeOptionProviderPlugin
+ * @package Elgentos\LargeConfigProducts\Plugin\Model
+ */
 class AttributeOptionProviderPlugin
 {
+    /** @var StoreIdStatic */
+    public $storeIdValueObject;
+
     /** @var StoreManagerInterface */
     protected $storeManager;
 
-    /** @var \Credis_Client|null */
-    protected $credis;
     /**
      * AttributeOptionProviderPlugin constructor.
      *
      * @param StoreManagerInterface $storeManager
-     * @param CredisClientFactory $credisClientFactory
+     * @param StoreIdStatic $storeIdValueObject
      */
     public function __construct(
         StoreManagerInterface $storeManager,
-        CredisClientFactory $credisClientFactory
+        StoreIdStatic $storeIdValueObject
     ) {
-        $this->credis       = $credisClientFactory->create();
         $this->storeManager = $storeManager;
+        $this->storeIdValueObject = $storeIdValueObject;
     }
+
     public function beforeGetAttributeOptions(
         \Magento\ConfigurableProduct\Model\AttributeOptionProvider $subject,
         \Magento\Eav\Model\Entity\Attribute\AbstractAttribute $superAttribute,
         $productId
     ) {
         /**
-         * The currentStoreId that is being set in the emulation in PrewarmerCommand is somehow lost in the call
-         * stack. This plugin uses the store ID found in the Redis DB to re-set the current store so the translated
-         * attribute option labels are retrieved correctly.
+         * The currentStoreId that is being set in the emulation in PrewarmerCommand is somehow lost in the call stack.
+         * This plugin uses the store ID found in the static store id value object to re-set the current store so the
+         * translated attribute option labels are retrieved correctly.
          */
-        if (PHP_SAPI == 'cli') {
-            $prewarmCurrentStore = $this->credis->get(Prewarmer::PREWARM_CURRENT_STORE);
-            if ($prewarmCurrentStore) {
-                $this->storeManager->setCurrentStore($prewarmCurrentStore);
-            }
+        $prewarmCurrentStore = $this->storeIdValueObject->getStoreId();
+        if ($prewarmCurrentStore) {
+            $this->storeManager->setCurrentStore($prewarmCurrentStore);
         }
     }
 }

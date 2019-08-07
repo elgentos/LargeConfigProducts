@@ -14,6 +14,10 @@ use Magento\Store\Model\StoreManagerInterface;
 use Magento\Framework\App\Cache\Manager as CacheManager;
 use Magento\Framework\App\Cache\Type\Collection as CacheTypeCollection;
 
+/**
+ * Class Prewarmer
+ * @package Elgentos\LargeConfigProducts\Model
+ */
 class Prewarmer {
     /**
      * @var PriceIndexer
@@ -22,6 +26,14 @@ class Prewarmer {
     protected $credis;
     protected $storeManager;
     protected $productRepository;
+    /**
+     * @var StoreIdStatic
+     */
+    protected $storeIdValueObject;
+    /**
+     * @var CacheManager
+     */
+    protected $cacheManager;
     /**
      * @var SearchCriteriaBuilder
      */
@@ -32,16 +44,9 @@ class Prewarmer {
     private $emulation;
 
     /**
-     * @var CacheManager
-     */
-    private $cacheManger;
-
-    /**
      * @var BlockFactory
      */
     private $blockFactory;
-
-    const PREWARM_CURRENT_STORE = 'PREWARM_CURRENT_STORE';
 
     /**
      * PrewarmerCommand constructor.
@@ -53,6 +58,8 @@ class Prewarmer {
      * @param CredisClientFactory $credisClientFactory
      * @param BlockFactory $blockFactory
      * @param PriceIndexer $priceIndexer
+     * @param CacheManager $cacheManager
+     * @param StoreIdStatic $storeIdValueObject
      */
     public function __construct(
         ProductRepositoryInterface $productRepository,
@@ -62,7 +69,8 @@ class Prewarmer {
         CredisClientFactory $credisClientFactory,
         BlockFactory $blockFactory,
         PriceIndexer $priceIndexer,
-        CacheManager $cacheManager
+        CacheManager $cacheManager,
+        StoreIdStatic $storeIdValueObject
     ) {
         $this->productRepository     = $productRepository;
         $this->storeManager          = $storeManager;
@@ -74,6 +82,7 @@ class Prewarmer {
         $this->blockFactory          = $blockFactory;
         $this->priceIndexer          = $priceIndexer;
         $this->cacheManager          = $cacheManager;
+        $this->storeIdValueObject    = $storeIdValueObject;
     }
 
     public function prewarm($productIdsToWarm, $storeCodesToWarm, $force)
@@ -123,9 +132,8 @@ class Prewarmer {
             $this->emulation->stopEnvironmentEmulation();
             $this->emulation->startEnvironmentEmulation($store->getId(), Area::AREA_FRONTEND, true);
 
-            $this->credis->set(self::PREWARM_CURRENT_STORE, $store->getId());
-
             $this->storeManager->setCurrentStore($store->getId());
+            $this->storeIdValueObject->setStoreId($store->getId());
 
             /** @var \Magento\Catalog\Api\Data\ProductInterface[] $products */
             $products = $this->productRepository->getList($searchCriteria)->getItems();
