@@ -5,11 +5,11 @@ namespace Elgentos\LargeConfigProducts\Model;
 use Magento\Catalog\Model\ProductFactory;
 use Magento\ConfigurableProduct\Model\Product\Type\Configurable;
 use Magento\ConfigurableProduct\Model\ResourceModel\Product\Type\Configurable as ConfigurableResourceModel;
-use Rcason\Mq\Api\PublisherInterface;
 use Magento\Framework\Module\Manager as ModuleManager;
+use Rcason\Mq\Api\PublisherInterface;
 
-class PublisherNotifier {
-
+class PublisherNotifier
+{
     /**
      * @var PublisherInterface
      */
@@ -29,10 +29,10 @@ class PublisherNotifier {
     private $productFactory;
 
     /**
-     * @param PublisherInterface $publisher
+     * @param PublisherInterface        $publisher
      * @param ConfigurableResourceModel $configurableResourceModel
-     * @param ModuleManager $moduleManager
-     * @param ProductFactory $productFactory
+     * @param ModuleManager             $moduleManager
+     * @param ProductFactory            $productFactory
      */
     public function __construct(
         PublisherInterface $publisher,
@@ -49,7 +49,8 @@ class PublisherNotifier {
     /**
      * @param $productIds array
      */
-    public function notify(array $productIds) {
+    public function notify(array $productIds)
+    {
         if ($this->moduleManager->isEnabled('Rcason_Mq')) {
             foreach ($productIds as $productId) {
                 $product = $this->productFactory->create()->load($productId);
@@ -64,5 +65,4 @@ class PublisherNotifier {
             }
         }
     }
-
 }

@@ -11,6 +11,7 @@ class ProductSaveAfter implements ObserverInterface
 
     /**
      * ProductSaveAfter constructor.
+     *
      * @param IndexerRegistry $indexerRegistry
      */
     public function __construct(IndexerRegistry $indexerRegistry)
@@ -23,8 +24,7 @@ class ProductSaveAfter implements ObserverInterface
      */
     public function execute(
         \Magento\Framework\Event\Observer $observer
-    )
-    {
+    ) {
         if (!$this->indexer->isScheduled()) {
             $this->indexer->reindexRow($observer->getProduct()->getId());
         }

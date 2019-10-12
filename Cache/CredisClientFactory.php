@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Elgentos\LargeConfigProducts\Cache;
@@ -21,26 +22,25 @@ class CredisClientFactory
     public function __construct(DeploymentConfig $deploymentConfig, ScopeConfigInterface $scopeConfig)
     {
         $this->deploymentConfig = $deploymentConfig;
-        $this->scopeConfig      = $scopeConfig;
+        $this->scopeConfig = $scopeConfig;
     }
 
     public function create(): \Credis_Client
     {
         $cacheSetting = $this->deploymentConfig->get('cache');
 
-        $timeout    = null;
+        $timeout = null;
         $persistent = '';
         if (isset($cacheSetting['frontend']['elgentos_largeconfigproducts']['backend_options'])) {
             $backendOptions = $cacheSetting['frontend']['elgentos_largeconfigproducts']['backend_options'];
 
-            $server   = $backendOptions['server'];
+            $server = $backendOptions['server'];
             $database = $backendOptions['database'];
-            $port     = $backendOptions['port'];
-
+            $port = $backendOptions['port'];
         } else {
             $server = $this->scopeConfig->getValue('elgentos_largeconfigproducts/prewarm/redis_host') ?? 'localhost';
 
-            $port     = $this->scopeConfig->getValue('elgentos_largeconfigproducts/prewarm/redis_port') ?? 6379;
+            $port = $this->scopeConfig->getValue('elgentos_largeconfigproducts/prewarm/redis_port') ?? 6379;
             $database = $this->scopeConfig->getValue('elgentos_largeconfigproducts/prewarm/redis_db_index') ?? 4;
         }
 

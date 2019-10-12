@@ -33,9 +33,10 @@ class PrewarmerCommand extends Command
 
     /**
      * PrewarmerCommand constructor.
+     *
      * @param RendererInterface $phraseRenderer
-     * @param State $state
-     * @param Prewarmer $prewarmer
+     * @param State             $state
+     * @param Prewarmer         $prewarmer
      */
     public function __construct(
         RendererInterface $phraseRenderer,
@@ -47,9 +48,7 @@ class PrewarmerCommand extends Command
         $this->state = $state;
         $this->prewarmer = $prewarmer;
     }
-    /**
-     *
-     */
+
     protected function configure()
     {
         $this->setName('lcp:prewarm');
@@ -60,7 +59,7 @@ class PrewarmerCommand extends Command
     }
 
     /**
-     * @param InputInterface $input
+     * @param InputInterface  $input
      * @param OutputInterface $output
      */
     protected function execute(InputInterface $input, OutputInterface $output)
@@ -71,11 +70,11 @@ class PrewarmerCommand extends Command
         Phrase::setRenderer($this->phraseRenderer);
 
         // Echo out instead of using output->writeln due to 'Area code not set' error. This error will not be shown (for some reason) when there has been output sent.
-        echo 'Prewarming' . PHP_EOL;
+        echo 'Prewarming'.PHP_EOL;
 
         $productIdsToWarm = [];
 
-        /** Filter products */
+        /* Filter products */
         if ($input->getOption('products')) {
             $productIdsToWarm = $input->getOption('products');
             $productIdsToWarm = explode(',', $productIdsToWarm);
@@ -100,5 +99,4 @@ class PrewarmerCommand extends Command
 
         $output->writeln('Done prewarming');
     }
-
 }

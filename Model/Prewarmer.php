@@ -7,17 +7,17 @@ use Magento\Catalog\Api\ProductRepositoryInterface;
 use Magento\ConfigurableProduct\Block\Product\View\Type\Configurable as ProductTypeConfigurable;
 use Magento\Framework\Api\SearchCriteriaBuilder;
 use Magento\Framework\App\Area;
+use Magento\Framework\App\Cache\Manager as CacheManager;
+use Magento\Framework\App\Cache\Type\Collection as CacheTypeCollection;
 use Magento\Framework\View\Element\BlockFactory;
 use Magento\Store\Model\App\Emulation;
 use Magento\Store\Model\StoreManagerInterface;
-use Magento\Framework\App\Cache\Manager as CacheManager;
-use Magento\Framework\App\Cache\Type\Collection as CacheTypeCollection;
 
 /**
- * Class Prewarmer
- * @package Elgentos\LargeConfigProducts\Model
+ * Class Prewarmer.
  */
-class Prewarmer {
+class Prewarmer
+{
     protected $credis;
     protected $storeManager;
     protected $productRepository;
@@ -47,13 +47,13 @@ class Prewarmer {
      * PrewarmerCommand constructor.
      *
      * @param ProductRepositoryInterface $productRepository
-     * @param StoreManagerInterface $storeManager
-     * @param SearchCriteriaBuilder $searchCriteriaBuilder
-     * @param Emulation $emulation
-     * @param CredisClientFactory $credisClientFactory
-     * @param BlockFactory $blockFactory
-     * @param CacheManager $cacheManager
-     * @param StoreIdStatic $storeIdValueObject
+     * @param StoreManagerInterface      $storeManager
+     * @param SearchCriteriaBuilder      $searchCriteriaBuilder
+     * @param Emulation                  $emulation
+     * @param CredisClientFactory        $credisClientFactory
+     * @param BlockFactory               $blockFactory
+     * @param CacheManager               $cacheManager
+     * @param StoreIdStatic              $storeIdValueObject
      */
     public function __construct(
         ProductRepositoryInterface $productRepository,
@@ -65,16 +65,16 @@ class Prewarmer {
         CacheManager $cacheManager,
         StoreIdStatic $storeIdValueObject
     ) {
-        $this->productRepository     = $productRepository;
-        $this->storeManager          = $storeManager;
-        $this->productRepository     = $productRepository;
-        $this->credis                = $credisClientFactory->create();
-        $this->storeManager          = $storeManager;
+        $this->productRepository = $productRepository;
+        $this->storeManager = $storeManager;
+        $this->productRepository = $productRepository;
+        $this->credis = $credisClientFactory->create();
+        $this->storeManager = $storeManager;
         $this->searchCriteriaBuilder = $searchCriteriaBuilder;
-        $this->emulation             = $emulation;
-        $this->blockFactory          = $blockFactory;
-        $this->cacheManager          = $cacheManager;
-        $this->storeIdValueObject    = $storeIdValueObject;
+        $this->emulation = $emulation;
+        $this->blockFactory = $blockFactory;
+        $this->cacheManager = $cacheManager;
+        $this->storeIdValueObject = $storeIdValueObject;
     }
 
     public function prewarm($productIdsToWarm, $storeCodesToWarm, $force)
@@ -97,11 +97,11 @@ class Prewarmer {
 
         /** Use the customer-group for guests. It is currently not possible to prewarm the production options with
          * catalog price rules baesd on the customer group as condition.
-         * Magento uses the Customer Session to do calculate the CatalogRulePrice and this seems hard to simulate from the CLI
+         * Magento uses the Customer Session to do calculate the CatalogRulePrice and this seems hard to simulate from the CLI.
          */
         $customerGroupId = 0;
 
-        /**
+        /*
          * Remove stores from array that are not in storeCodesToWarm (if set)
          */
         foreach ($stores as $key => $store) {
@@ -115,7 +115,7 @@ class Prewarmer {
 
         $i = 1;
         foreach ($stores as $store) {
-            /**
+            /*
              * Use store emulation to let Magento fetch the correct translations for in the JSON object
              * But stop any running store environment emulation first so we can run it
              */
@@ -128,14 +128,14 @@ class Prewarmer {
             /** @var \Magento\Catalog\Api\Data\ProductInterface[] $products */
             $products = $this->productRepository->getList($searchCriteria)->getItems();
             foreach ($products as $product) {
-                $cacheKey = 'LCP_PRODUCT_INFO_' . $store->getId() . '_' . $product->getId() . '_' . $customerGroupId;
+                $cacheKey = 'LCP_PRODUCT_INFO_'.$store->getId().'_'.$product->getId().'_'.$customerGroupId;
 
                 if (!$this->credis->exists($cacheKey) || $force) {
-                    $output[] = 'Prewarming ' . $product->getSku() . ' for store ' . $store->getCode() . ' (' . $i . '/' . count($stores) . ')';
+                    $output[] = 'Prewarming '.$product->getSku().' for store '.$store->getCode().' ('.$i.'/'.count($stores).')';
                     $productOptionInfo = $this->getJsonConfig($product);
                     $this->credis->set($cacheKey, $productOptionInfo);
                 } else {
-                    $output[] = $product->getSku() . ' is already prewarmed for store ' . $store->getCode() . ' (' . $i . '/' . count($stores) . ')';
+                    $output[] = $product->getSku().' is already prewarmed for store '.$store->getCode().' ('.$i.'/'.count($stores).')';
                 }
                 $i++;
             }
@@ -145,10 +145,9 @@ class Prewarmer {
         return implode(PHP_EOL, $output);
     }
 
-
-
     /**
      * @param $currentProduct
+     *
      * @return mixed
      *
      * See original method at Magento\ConfigurableProduct\Block\Product\View\Type\Configurable::getJsonConfig
@@ -160,5 +159,4 @@ class Prewarmer {
 
         return $block->getJsonConfig();
     }
-
 }
