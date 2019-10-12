@@ -4,6 +4,7 @@ namespace Elgentos\LargeConfigProducts\Model\Indexer;
 
 use Elgentos\LargeConfigProducts\Model\PublisherNotifier;
 use Magento\Catalog\Model\ResourceModel\Product\Collection as ProductCollection;
+use Magento\Catalog\Model\ResourceModel\Product\CollectionFactory as ProductCollectionFactory;
 use Magento\Framework\App\Area;
 use Magento\Framework\App\State;
 use Magento\Framework\Indexer\ActionInterface as IndexerActionInterface;
@@ -11,7 +12,6 @@ use Magento\Framework\Message\ManagerInterface;
 use Magento\Framework\Mview\ActionInterface as MviewActionInterface;
 use Magento\Store\Model\StoreManagerInterface;
 use Symfony\Component\Console\Output\ConsoleOutput;
-use Magento\Catalog\Model\ResourceModel\Product\CollectionFactory as ProductCollectionFactory;
 
 class Prewarm implements IndexerActionInterface, MviewActionInterface
 {
@@ -34,11 +34,12 @@ class Prewarm implements IndexerActionInterface, MviewActionInterface
 
     /**
      * Product constructor.
-     * @param StoreManagerInterface $storeManager
-     * @param ManagerInterface $messageManager
-     * @param ConsoleOutput $output
-     * @param State $state
-     * @param PublisherNotifier $publisherNotifier
+     *
+     * @param StoreManagerInterface    $storeManager
+     * @param ManagerInterface         $messageManager
+     * @param ConsoleOutput            $output
+     * @param State                    $state
+     * @param PublisherNotifier        $publisherNotifier
      * @param ProductCollectionFactory $productCollectionFactory
      */
     public function __construct(
@@ -62,7 +63,6 @@ class Prewarm implements IndexerActionInterface, MviewActionInterface
         try {
             $this->state->setAreaCode(Area::AREA_GLOBAL);
         } catch (\Exception $e) {
-
         }
 
         if (!is_array($productIds)) {

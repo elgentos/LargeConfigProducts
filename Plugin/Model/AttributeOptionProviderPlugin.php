@@ -3,7 +3,7 @@
  * Created by PhpStorm.
  * User: peterjaap
  * Date: 21-2-18
- * Time: 13:53
+ * Time: 13:53.
  */
 
 namespace Elgentos\LargeConfigProducts\Plugin\Model;
@@ -12,8 +12,7 @@ use Elgentos\LargeConfigProducts\Model\StoreIdStatic;
 use Magento\Store\Model\StoreManagerInterface;
 
 /**
- * Class AttributeOptionProviderPlugin
- * @package Elgentos\LargeConfigProducts\Plugin\Model
+ * Class AttributeOptionProviderPlugin.
  */
 class AttributeOptionProviderPlugin
 {
@@ -27,7 +26,7 @@ class AttributeOptionProviderPlugin
      * AttributeOptionProviderPlugin constructor.
      *
      * @param StoreManagerInterface $storeManager
-     * @param StoreIdStatic $storeIdValueObject
+     * @param StoreIdStatic         $storeIdValueObject
      */
     public function __construct(
         StoreManagerInterface $storeManager,

@@ -5,12 +5,13 @@ namespace Elgentos\LargeConfigProducts\Plugin\Product\Action;
 use Magento\Catalog\Model\Product\Action as ProductAction;
 use Magento\Framework\Indexer\IndexerRegistry;
 
-class AfterUpdateAttributesPlugin {
-
+class AfterUpdateAttributesPlugin
+{
     private $indexer;
 
     /**
      * AfterUpdateAttributesPlugin constructor.
+     *
      * @param IndexerRegistry $indexerRegistry
      */
     public function __construct(IndexerRegistry $indexerRegistry)
@@ -24,6 +25,7 @@ class AfterUpdateAttributesPlugin {
      * @param $productIds
      * @param $attrData
      * @param $storeId
+     *
      * @return ProductAction
      */
     public function afterUpdateAttributes(
@@ -39,5 +41,4 @@ class AfterUpdateAttributesPlugin {
 
         return $action;
     }
-
 }

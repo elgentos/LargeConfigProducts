@@ -4,7 +4,7 @@
  * Created by PhpStorm.
  * User: peterjaap
  * Date: 4-1-18
- * Time: 11:20
+ * Time: 11:20.
  */
 
 namespace Elgentos\LargeConfigProducts\Controller\Fetch;
@@ -15,7 +15,6 @@ use Magento\ConfigurableProduct\Block\Product\View\Type\Configurable as ProductT
 use Magento\Customer\Model\Session as CustomerSession;
 use Magento\Framework\App\Action\Action;
 use Magento\Framework\App\Action\Context;
-use Magento\Framework\App\Config\ScopeConfigInterface;
 use Magento\Store\Model\StoreManagerInterface;
 
 class ProductOptions extends Action
@@ -42,11 +41,11 @@ class ProductOptions extends Action
     /**
      * ProductOptions constructor.
      *
-     * @param Context $context
+     * @param Context                    $context
      * @param ProductRepositoryInterface $productRepository
-     * @param CredisClientFactory $credisClientFactory
-     * @param StoreManagerInterface $storeManager
-     * @param CustomerSession $customerSession
+     * @param CredisClientFactory        $credisClientFactory
+     * @param StoreManagerInterface      $storeManager
+     * @param CustomerSession            $customerSession
      *
      * @internal param Product $catalogProduct
      */
@@ -59,9 +58,9 @@ class ProductOptions extends Action
     ) {
         parent::__construct($context);
         $this->productRepository = $productRepository;
-        $this->storeManager      = $storeManager;
-        $this->customerSession   = $customerSession;
-        $this->credis            = $credisClientFactory->create();
+        $this->storeManager = $storeManager;
+        $this->customerSession = $customerSession;
+        $this->credis = $credisClientFactory->create();
     }
 
     /**
@@ -78,8 +77,9 @@ class ProductOptions extends Action
     /**
      * @param $productId
      *
-     * @return bool|mixed|string
      * @throws \Magento\Framework\Exception\NoSuchEntityException
+     *
+     * @return bool|mixed|string
      */
     public function getProductOptionInfo($productId)
     {
@@ -87,10 +87,10 @@ class ProductOptions extends Action
             return false;
         }
 
-        $storeId         = $this->storeManager->getStore()->getId();
+        $storeId = $this->storeManager->getStore()->getId();
         $customerGroupId = $this->customerSession->getCustomerGroupId();
 
-        $cacheKey = 'LCP_PRODUCT_INFO_' . $storeId . '_' . $productId . '_' . $customerGroupId;
+        $cacheKey = 'LCP_PRODUCT_INFO_'.$storeId.'_'.$productId.'_'.$customerGroupId;
 
         if ($this->credis->exists($cacheKey)) {
             return $this->credis->get($cacheKey);
