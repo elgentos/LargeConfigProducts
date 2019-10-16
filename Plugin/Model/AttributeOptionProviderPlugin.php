@@ -3,20 +3,24 @@
  * Created by PhpStorm.
  * User: peterjaap
  * Date: 21-2-18
- * Time: 13:53
+ * Time: 13:53.
  */
+
 namespace Elgentos\LargeConfigProducts\Plugin\Model;
+
+use Credis_Client;
 use Elgentos\LargeConfigProducts\Model\Prewarmer;
-use Magento\Catalog\Model\ProductFactory;
 use Magento\Framework\App\DeploymentConfig;
 use Magento\Store\Model\StoreManagerInterface;
-use Credis_Client;
+
 class AttributeOptionProviderPlugin
 {
     protected $storeManager;
     protected $credis;
+
     /**
      * AttributeOptionProviderPlugin constructor.
+     *
      * @param StoreManagerInterface $storeManager
      */
     public function __construct(
@@ -30,9 +34,10 @@ class AttributeOptionProviderPlugin
         }
         $this->storeManager = $storeManager;
     }
+
     public function beforeGetAttributeOptions(\Magento\ConfigurableProduct\Model\AttributeOptionProvider $subject, \Magento\Eav\Model\Entity\Attribute\AbstractAttribute $superAttribute, $productId)
     {
-        /**
+        /*
          * The currentStoreId that is being set in the emulation in PrewarmerCommand is somehow lost in the call
          * stack. This plugin uses the store ID found in the Redis DB to re-set the current store so the translated
          * attribute option labels are retrieved correctly.

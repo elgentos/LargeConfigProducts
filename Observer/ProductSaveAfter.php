@@ -9,9 +9,11 @@ class ProductSaveAfter implements ObserverInterface
 {
     /**
      * ProductSaveAfter constructor.
+     *
      * @param PublisherNotifier $publisherNotifier
      */
-    public function __construct(PublisherNotifier $publisherNotifier) {
+    public function __construct(PublisherNotifier $publisherNotifier)
+    {
         $this->publisherNotifier = $publisherNotifier;
     }
 
