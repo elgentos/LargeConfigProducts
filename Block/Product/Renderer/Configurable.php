@@ -3,7 +3,7 @@
  * Created by PhpStorm.
  * User: peterjaap
  * Date: 4-1-18
- * Time: 10:47
+ * Time: 10:47.
  */
 
 namespace Elgentos\LargeConfigProducts\Block\Product\Renderer;
@@ -14,7 +14,7 @@ class Configurable extends \Magento\Swatches\Block\Product\Renderer\Configurable
     const CUSTOM_CONFIGURABLE_RENDERER_TEMPLATE = 'Elgentos_LargeConfigProducts::product/view/type/options/configurable.phtml';
 
     /**
-     * Return renderer template
+     * Return renderer template.
      *
      * Template for product with swatches is different from product without swatches
      *
@@ -25,5 +25,4 @@ class Configurable extends \Magento\Swatches\Block\Product\Renderer\Configurable
         return $this->isProductHasSwatchAttribute() ?
             self::CUSTOM_SWATCH_RENDERER_TEMPLATE : self::CUSTOM_CONFIGURABLE_RENDERER_TEMPLATE;
     }
-
 }

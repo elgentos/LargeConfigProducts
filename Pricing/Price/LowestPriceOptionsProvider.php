@@ -3,19 +3,19 @@
  * Created by PhpStorm.
  * User: peterjaap
  * Date: 15-11-18
- * Time: 10:58
+ * Time: 10:58.
  */
 
 namespace Elgentos\LargeConfigProducts\Pricing\Price;
 
-use Magento\Catalog\Api\Data\ProductInterface;
-use Magento\Catalog\Model\ResourceModel\Product\LinkedProductSelectBuilderInterface;
-use Magento\Framework\App\ResourceConnection;
-use Magento\Catalog\Model\ResourceModel\Product\CollectionFactory;
-use Magento\Framework\App\Config\ScopeConfigInterface;
-use Elgentos\LargeConfigProducts\Model\Prewarmer;
-use Magento\Store\Model\StoreManagerInterface;
 use Credis_Client;
+use Elgentos\LargeConfigProducts\Model\Prewarmer;
+use Magento\Catalog\Api\Data\ProductInterface;
+use Magento\Catalog\Model\ResourceModel\Product\CollectionFactory;
+use Magento\Catalog\Model\ResourceModel\Product\LinkedProductSelectBuilderInterface;
+use Magento\Framework\App\Config\ScopeConfigInterface;
+use Magento\Framework\App\ResourceConnection;
+use Magento\Store\Model\StoreManagerInterface;
 
 class LowestPriceOptionsProvider extends \Magento\ConfigurableProduct\Pricing\Price\LowestPriceOptionsProvider
 {
@@ -44,18 +44,18 @@ class LowestPriceOptionsProvider extends \Magento\ConfigurableProduct\Pricing\Pr
     private $collectionFactory;
 
     /**
-     * Key is product id. Value is array of prepared linked products
+     * Key is product id. Value is array of prepared linked products.
      *
      * @var array
      */
     private $linkedProductMap;
 
     /**
-     * @param ResourceConnection $resourceConnection
+     * @param ResourceConnection                  $resourceConnection
      * @param LinkedProductSelectBuilderInterface $linkedProductSelectBuilder
-     * @param CollectionFactory $collectionFactory
-     * @param StoreManagerInterface $storeManager
-     * @param ScopeConfigInterface $scopeConfig
+     * @param CollectionFactory                   $collectionFactory
+     * @param StoreManagerInterface               $storeManager
+     * @param ScopeConfigInterface                $scopeConfig
      */
     public function __construct(
         ResourceConnection $resourceConnection,
@@ -78,13 +78,12 @@ class LowestPriceOptionsProvider extends \Magento\ConfigurableProduct\Pricing\Pr
         $this->storeManager = $storeManager;
     }
 
-
     /**
      * {@inheritdoc}
      */
     public function getProducts(ProductInterface $product)
     {
-        /**
+        /*
          * The currentStoreId that is being set in the emulation in PrewarmerCommand is somehow lost in the call
          * stack. This plugin uses the store ID found in the Redis DB to re-set the current store so the prices
          * are retrieved correctly.
@@ -97,7 +96,7 @@ class LowestPriceOptionsProvider extends \Magento\ConfigurableProduct\Pricing\Pr
         }
 
         $productIds = $this->resource->getConnection()->fetchCol(
-            '(' . implode(') UNION (', $this->linkedProductSelectBuilder->build($product->getId())) . ')'
+            '('.implode(') UNION (', $this->linkedProductSelectBuilder->build($product->getId())).')'
         );
 
         return $this->linkedProductMap[$product->getId()] = $this->collectionFactory->create()
@@ -107,5 +106,4 @@ class LowestPriceOptionsProvider extends \Magento\ConfigurableProduct\Pricing\Pr
             ->addIdFilter($productIds)
             ->getItems();
     }
-
 }

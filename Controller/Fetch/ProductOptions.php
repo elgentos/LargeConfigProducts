@@ -4,7 +4,7 @@
  * Created by PhpStorm.
  * User: peterjaap
  * Date: 4-1-18
- * Time: 11:20
+ * Time: 11:20.
  */
 
 namespace Elgentos\LargeConfigProducts\Controller\Fetch;
@@ -45,9 +45,9 @@ class ProductOptions extends Action
     /**
      * ProductOptions constructor.
      *
-     * @param Context $context
+     * @param Context                    $context
      * @param ProductRepositoryInterface $productRepository
-     * @param Registry $coreRegistry
+     * @param Registry                   $coreRegistry
      *
      * @internal param Product $catalogProduct
      */
@@ -61,9 +61,9 @@ class ProductOptions extends Action
     ) {
         parent::__construct($context);
         $this->productRepository = $productRepository;
-        $this->_coreRegistry     = $coreRegistry;
-        $this->storeManager      = $storeManager;
-        $this->customerSession   = $customerSession;
+        $this->_coreRegistry = $coreRegistry;
+        $this->storeManager = $storeManager;
+        $this->customerSession = $customerSession;
         $this->credis = new Credis_Client(
             $scopeConfig->getValue('elgentos_largeconfigproducts/prewarm/redis_host') ?? 'localhost',
             $scopeConfig->getValue('elgentos_largeconfigproducts/prewarm/redis_port') ?? 6379,
@@ -87,8 +87,9 @@ class ProductOptions extends Action
     /**
      * @param $productId
      *
-     * @return bool|mixed|string
      * @throws \Magento\Framework\Exception\NoSuchEntityException
+     *
+     * @return bool|mixed|string
      */
     public function getProductOptionInfo($productId)
     {
@@ -96,11 +97,11 @@ class ProductOptions extends Action
             return false;
         }
 
-        $storeId         = $this->storeManager->getStore()->getId();
+        $storeId = $this->storeManager->getStore()->getId();
         $customerGroupId = $this->customerSession->getCustomerGroupId();
 
-        $cacheKey = 'LCP_PRODUCT_INFO_' . $storeId . '_' . $productId . '_' . $customerGroupId;
-        
+        $cacheKey = 'LCP_PRODUCT_INFO_'.$storeId.'_'.$productId.'_'.$customerGroupId;
+
         if ($this->credis->exists($cacheKey)) {
             return $this->credis->get($cacheKey);
         }
