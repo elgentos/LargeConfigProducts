@@ -38,7 +38,11 @@ Use version 0.4.0 of this module for Magento 2.3.x.
 
 Magento 2.3.0 includes integrated message queue management using RabbitMQ, this has replaced the renatocason/magento2-module-mq module used for dynamic pre warming of configurable products after saving.
 
-To use RabbitMQ messaging with this module you will require a RabbitMQ server accessible by Magento. Configure the server in your env.php file
+To use RabbitMQ messaging with this module you will require a RabbitMQ server accessible by Magento.
+
+https://devdocs.magento.com/guides/v2.3/install-gde/prereq/install-rabbitmq.html
+
+Configure the server in your env.php file
 
     'queue' =>
       array (
