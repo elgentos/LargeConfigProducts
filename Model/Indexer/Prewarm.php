@@ -2,7 +2,7 @@
 
 namespace Elgentos\LargeConfigProducts\Model\Indexer;
 
-use Elgentos\LargeConfigProducts\Model\PublisherNotifier;
+use Elgentos\LargeConfigProducts\Model\MessageQueues\Publisher as Publisher;
 use Magento\Catalog\Model\ResourceModel\Product\Collection as ProductCollection;
 use Magento\Catalog\Model\ResourceModel\Product\CollectionFactory as ProductCollectionFactory;
 use Magento\Framework\App\Area;
@@ -30,7 +30,7 @@ class Prewarm implements IndexerActionInterface, MviewActionInterface
     /**
      * @var PublisherNotifier
      */
-    protected $publisherNotifier;
+    protected $publisher;
 
     /**
      * Product constructor.
@@ -39,7 +39,7 @@ class Prewarm implements IndexerActionInterface, MviewActionInterface
      * @param ManagerInterface         $messageManager
      * @param ConsoleOutput            $output
      * @param State                    $state
-     * @param PublisherNotifier        $publisherNotifier
+     * @param Publisher                $publisher
      * @param ProductCollectionFactory $productCollectionFactory
      */
     public function __construct(
@@ -47,10 +47,10 @@ class Prewarm implements IndexerActionInterface, MviewActionInterface
         ManagerInterface $messageManager,
         ConsoleOutput $output,
         State $state,
-        PublisherNotifier $publisherNotifier,
+        Publisher $publisher,
         ProductCollectionFactory $productCollectionFactory
     ) {
-        $this->publisherNotifier = $publisherNotifier;
+        $this->publisher = $publisher;
         $this->storeManager = $storeManager;
         $this->messageManager = $messageManager;
         $this->output = $output;
@@ -72,7 +72,7 @@ class Prewarm implements IndexerActionInterface, MviewActionInterface
         }
 
         foreach ($productIds as $productId) {
-            $this->publisherNotifier->notify([$productId]);
+            $this->publisher->notify([$productId]);
         }
     }
 

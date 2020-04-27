@@ -48,21 +48,43 @@ define([
                 });
             },
 
-            updateBaseImage: function (images, context, isInProductView, eventName) {
-                // If no images are set, do not replace existing image
-                if (images.length > 0 && images[0].full == null) {
-                    return;
-                }
+            updateBaseImage: function (images, context, isInProductView) {
+                var justAnImage = images[0],
+                    initialImages = this.options.mediaGalleryInitial,
+                    imagesToUpdate,
+                    gallery = context.find(this.options.mediaGallerySelector).data('gallery'),
+                    isInitial;
 
-                var gallery = context.find(this.options.mediaGallerySelector).data('gallery');
+                if (isInProductView) {
+                    imagesToUpdate = images.length ? this._setImageType($.extend(true, [], images)) : [];
+                    isInitial = _.isEqual(imagesToUpdate, initialImages);
 
-                if (eventName === undefined) {
-                    this.processUpdateBaseImage(images, context, isInProductView, gallery);
-                } else {
-                    context.find(this.options.mediaGallerySelector).on('gallery:loaded', function (loadedGallery) {
-                        loadedGallery = context.find(this.options.mediaGallerySelector).data('gallery');
-                        this.processUpdateBaseImage(images, context, isInProductView, loadedGallery);
-                    }.bind(this));
+                    if (this.options.gallerySwitchStrategy === 'prepend' && !isInitial) {
+                        imagesToUpdate = imagesToUpdate.concat(initialImages);
+                    }
+
+                    imagesToUpdate = this._setImageIndex(imagesToUpdate);
+
+                    if (!_.isUndefined(gallery)) {
+                        gallery.updateData(imagesToUpdate);
+                    } else {
+                        context.find(this.options.mediaGallerySelector).on('gallery:loaded', function (loadedGallery) {
+                            loadedGallery = context.find(this.options.mediaGallerySelector).data('gallery');
+                            loadedGallery.updateData(imagesToUpdate);
+                        }.bind(this));
+                    }
+
+                    if (isInitial) {
+                        $(this.options.mediaGallerySelector).AddFotoramaVideoEvents();
+                    } else {
+                        $(this.options.mediaGallerySelector).AddFotoramaVideoEvents({
+                            selectedOption: this.getProduct(),
+                            dataMergeStrategy: this.options.gallerySwitchStrategy
+                        });
+                    }
+                    gallery.first();
+                } else if (justAnImage && justAnImage.img) {
+                    context.find('.product-image-photo').attr('src', justAnImage.img);
                 }
             },
 
