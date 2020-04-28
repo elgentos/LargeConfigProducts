@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework-message-queue:etc/queue_topology.xsd">
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework-message-queue:etc/topology.xsd">    
     <!-- name : A unique ID for the exchange  -->
     <!-- type : Specifies the type of exchange. Must be topic -->
     <!-- connection: For AMQP connections, a string that identifies the connection. For MySQL connections, the connection name must be db -->

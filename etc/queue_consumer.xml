@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework-message-queue:etc/queue_consumer.xsd">
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework-message-queue:etc/consumer.xsd">    
     <!-- name: The name of the consumer -->
     <!-- queue: Defines the queue name to send the message to -->
     <!-- connection: For AMQP connections, the connection name must match the connection attribute in the queue_topology.xml file. Otherwise, the connection name must be db -->

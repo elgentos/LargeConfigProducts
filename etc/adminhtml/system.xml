@@ -28,6 +28,14 @@
                     <comment>Defaults to 4. 1 is probably used for settings and 2 probably for sessions.</comment>
                 </field>
             </group>
+            <group id="options" translate="label" type="text" sortOrder="200" showInDefault="1" showInWebsite="1" showInStore="0">
+                <label>Customer Groups</label>
+                <field id="enable_customer_groups" translate="label" type="select" showInDefault="1" showInWebsite="0" showInStore="0" canRestore="1">
+                    <label>Enable cache per customer group</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <comment>Set to No to use default customer group 0 for all cache data.</comment>
+                </field>
+            </group>
         </section>
     </system>
 </config>
