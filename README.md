@@ -34,8 +34,6 @@ The command has a few options;
 `--force true` - force the prewarmer to overwrite existing entries. Otherwise the prewarmer will skip product/storecode combinations that already have an entry.
 
 ## Magento 2.3.X
-Use version 0.4.0 of this module for Magento 2.3.x.
-
 Magento 2.3.0 includes integrated message queue management using RabbitMQ, this has replaced the renatocason/magento2-module-mq module used for dynamic pre warming of configurable products after saving.
 
 To use RabbitMQ messaging with this module you will require a RabbitMQ server accessible by Magento.
@@ -64,7 +62,7 @@ Start the message queue consumer with
 
     bin/magento queue:consumers:start elgentos_magento_lcp_product_prewarm
 
-To test dynamic updating of the cache edit a configurable product (parent or child)
+To test dynamic updating of the cache edit and save a configurable product (parent or child)
 
 You will see the prewarm process updating the cache
 
@@ -77,8 +75,9 @@ You will see the prewarm process updating the cache
 You can run the consumer as a background process. You may need to manage the consumer with a supervisor process to ensure it always runs. Alternatively if you are using Docker the consumer can run as a standalone container set to always restart.
 
 ## Release Notes
-0.4.0 - gaiterjones - 04.2020
-Compatibility with Magento 2.3.3 using built in AQMP/RabbitMQ integration
-Removed requirement for renatocason/magento2-module-mq
-Updated swatch-renderer-mixin updateBaseImage
-Disabled configurable-customer-data from requirejs (not entireley sure what that is doing but it throws an error in 2.3.3)
+0.4.0 - gaiterjones - 04.2020  
+Compatibility with Magento 2.3.x using built in AQMP/RabbitMQ integration  
+Removed requirement for renatocason/magento2-module-mq  
+Updated swatch-renderer-mixin updateBaseImage  
+Disabled configurable-customer-data from requirejs orginally used to auto select first option, not working in 2.3.x  
+Added option to disable cache per customer group so that group 0 is always used. Use this if you do not have customer group pricing  
