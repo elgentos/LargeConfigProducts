@@ -94,8 +94,7 @@ class ProductOptions extends Action
         $customerGroupId=0;
 
         $enableCustomerGroupId=$this->scopeConfig->getValue('elgentos_largeconfigproducts/options/enable_customer_groups');
-        if ($enableCustomerGroupId)
-        {
+        if ($enableCustomerGroupId) {
             $customerGroupId = $this->customerSession->getCustomerGroupId();
         }
 
