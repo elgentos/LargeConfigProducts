@@ -42,13 +42,13 @@ class Consumer
         $this->scopeConfig = $scopeConfig;
     }
 
-/**
- * Process message queue
- *
- * @param  string $productId
- *
- * @return void
- */
+    /**
+     * Process message queue.
+     *
+     * @param string $productId
+     *
+     * @return void
+     */
     public function processMessage(string $productId)
     {
         echo sprintf('Processing %s..', $productId).PHP_EOL;
