@@ -44,7 +44,9 @@ class Consumer
 
 /**
  * Process message queue
+ *
  * @param  string $productId
+ *
  * @return void
  */
     public function processMessage(string $productId)
