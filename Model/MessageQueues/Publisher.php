@@ -5,8 +5,8 @@ namespace Elgentos\LargeConfigProducts\Model\MessageQueues;
 use Magento\Catalog\Model\ProductFactory;
 use Magento\ConfigurableProduct\Model\Product\Type\Configurable;
 use Magento\ConfigurableProduct\Model\ResourceModel\Product\Type\Configurable as ConfigurableResourceModel;
-use Magento\Framework\Module\Manager as ModuleManager;
 use Magento\Framework\MessageQueue\PublisherInterface;
+use Magento\Framework\Module\Manager as ModuleManager;
 
 class Publisher
 {

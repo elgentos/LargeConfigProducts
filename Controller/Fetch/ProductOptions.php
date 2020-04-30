@@ -8,8 +8,8 @@ use Magento\ConfigurableProduct\Block\Product\View\Type\Configurable as ProductT
 use Magento\Customer\Model\Session as CustomerSession;
 use Magento\Framework\App\Action\Action;
 use Magento\Framework\App\Action\Context;
-use Magento\Store\Model\StoreManagerInterface;
 use Magento\Framework\App\Config\ScopeConfigInterface;
+use Magento\Store\Model\StoreManagerInterface;
 
 class ProductOptions extends Action
 {
@@ -91,9 +91,9 @@ class ProductOptions extends Action
 
         $storeId = $this->storeManager->getStore()->getId();
 
-        $customerGroupId=0;
+        $customerGroupId = 0;
 
-        $enableCustomerGroupId=$this->scopeConfig->getValue('elgentos_largeconfigproducts/options/enable_customer_groups');
+        $enableCustomerGroupId = $this->scopeConfig->getValue('elgentos_largeconfigproducts/options/enable_customer_groups');
         if ($enableCustomerGroupId) {
             $customerGroupId = $this->customerSession->getCustomerGroupId();
         }

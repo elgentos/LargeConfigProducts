@@ -4,7 +4,6 @@ namespace Elgentos\LargeConfigProducts\Model\MessageQueues;
 
 use Elgentos\LargeConfigProducts\Model\Prewarmer;
 use Magento\Framework\App\Config\ScopeConfigInterface;
-use Magento\Mtf\Config\FileResolver\ScopeConfig;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Process\Process;
 
@@ -43,9 +42,11 @@ class Consumer
         $this->scopeConfig = $scopeConfig;
     }
 
-    /**
-     * {@inheritdoc}
-     */
+/**
+ * Process message queue
+ * @param  string $productId
+ * @return void
+ */
     public function processMessage(string $productId)
     {
         echo sprintf('Processing %s..', $productId).PHP_EOL;
