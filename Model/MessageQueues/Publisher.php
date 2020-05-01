@@ -1,14 +1,14 @@
 <?php
 
-namespace Elgentos\LargeConfigProducts\Model;
+namespace Elgentos\LargeConfigProducts\Model\MessageQueues;
 
 use Magento\Catalog\Model\ProductFactory;
 use Magento\ConfigurableProduct\Model\Product\Type\Configurable;
 use Magento\ConfigurableProduct\Model\ResourceModel\Product\Type\Configurable as ConfigurableResourceModel;
+use Magento\Framework\MessageQueue\PublisherInterface;
 use Magento\Framework\Module\Manager as ModuleManager;
-use Rcason\Mq\Api\PublisherInterface;
 
-class PublisherNotifier
+class Publisher
 {
     /**
      * @var PublisherInterface
@@ -51,16 +51,14 @@ class PublisherNotifier
      */
     public function notify(array $productIds)
     {
-        if ($this->moduleManager->isEnabled('Rcason_Mq')) {
-            foreach ($productIds as $productId) {
-                $product = $this->productFactory->create()->load($productId);
-                if ($product->getTypeId() == Configurable::TYPE_CODE) {
-                    $this->publisher->publish('lcp.product.prewarm', $productId);
-                } elseif ($product->getTypeId() == 'simple') {
-                    $parentIds = $this->configurableResourceModel->getParentIdsByChild($productId);
-                    foreach ($parentIds as $parentId) {
-                        $this->publisher->publish('lcp.product.prewarm', $parentId);
-                    }
+        foreach ($productIds as $productId) {
+            $product = $this->productFactory->create()->load($productId);
+            if ($product->getTypeId() == Configurable::TYPE_CODE) {
+                $this->publisher->publish('elgentos.magento.lcp.product.prewarm', $productId);
+            } elseif ($product->getTypeId() == 'simple') {
+                $parentIds = $this->configurableResourceModel->getParentIdsByChild($productId);
+                foreach ($parentIds as $parentId) {
+                    $this->publisher->publish('elgentos.magento.lcp.product.prewarm', $parentId);
                 }
             }
         }

@@ -1,12 +1,5 @@
 <?php
 
-/**
- * Created by PhpStorm.
- * User: peterjaap
- * Date: 4-1-18
- * Time: 11:20.
- */
-
 namespace Elgentos\LargeConfigProducts\Controller\Fetch;
 
 use Elgentos\LargeConfigProducts\Cache\CredisClientFactory;
@@ -15,6 +8,7 @@ use Magento\ConfigurableProduct\Block\Product\View\Type\Configurable as ProductT
 use Magento\Customer\Model\Session as CustomerSession;
 use Magento\Framework\App\Action\Action;
 use Magento\Framework\App\Action\Context;
+use Magento\Framework\App\Config\ScopeConfigInterface;
 use Magento\Store\Model\StoreManagerInterface;
 
 class ProductOptions extends Action
@@ -24,6 +18,11 @@ class ProductOptions extends Action
     protected $catalogProduct;
 
     protected $credis;
+
+    /**
+     * @var ScopeConfigInterface
+     */
+    private $scopeConfig;
 
     /**
      * @var ProductRepositoryInterface
@@ -46,6 +45,7 @@ class ProductOptions extends Action
      * @param CredisClientFactory        $credisClientFactory
      * @param StoreManagerInterface      $storeManager
      * @param CustomerSession            $customerSession
+     * @param ScopeConfigInterface       $scopeConfig
      *
      * @internal param Product $catalogProduct
      */
@@ -54,12 +54,14 @@ class ProductOptions extends Action
         ProductRepositoryInterface $productRepository,
         CredisClientFactory $credisClientFactory,
         StoreManagerInterface $storeManager,
-        CustomerSession $customerSession
+        CustomerSession $customerSession,
+        ScopeConfigInterface $scopeConfig
     ) {
         parent::__construct($context);
         $this->productRepository = $productRepository;
         $this->storeManager = $storeManager;
         $this->customerSession = $customerSession;
+        $this->scopeConfig = $scopeConfig;
         $this->credis = $credisClientFactory->create();
     }
 
@@ -88,7 +90,13 @@ class ProductOptions extends Action
         }
 
         $storeId = $this->storeManager->getStore()->getId();
-        $customerGroupId = $this->customerSession->getCustomerGroupId();
+
+        $customerGroupId = 0;
+
+        $enableCustomerGroupId = $this->scopeConfig->getValue('elgentos_largeconfigproducts/options/enable_customer_groups');
+        if ($enableCustomerGroupId) {
+            $customerGroupId = $this->customerSession->getCustomerGroupId();
+        }
 
         $cacheKey = 'LCP_PRODUCT_INFO_'.$storeId.'_'.$productId.'_'.$customerGroupId;
 

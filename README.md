@@ -2,6 +2,8 @@
 
 This extension is built to work around the problems Magento 2 is causing when using configurable products with extremely large amounts of simple products associated to it. Magento 2 can handle up to around 3000 associated simple products pretty well. Above that, it becomes extremely slow and sometimes unusable (such as webserver timeouts).
 
+This version is only compatible with Magento 2.3.X
+
 ## Example
 
 ![peek 2018-01-19 10-14](https://user-images.githubusercontent.com/431360/35143386-a84cbd2e-fd01-11e7-9245-f9005aba04ed.gif)
@@ -30,3 +32,52 @@ The command has a few options;
 `--storecodes english,dutch,german` - define for which store code(s) you want to run the prewarmer
 
 `--force true` - force the prewarmer to overwrite existing entries. Otherwise the prewarmer will skip product/storecode combinations that already have an entry.
+
+## Magento 2.3.X
+Magento 2.3.0 includes integrated message queue management using RabbitMQ, this has replaced the renatocason/magento2-module-mq module used for dynamic pre warming of configurable products after saving.
+
+To use RabbitMQ messaging with this module you will require a RabbitMQ server accessible by Magento.
+
+https://devdocs.magento.com/guides/v2.3/install-gde/prereq/install-rabbitmq.html
+
+Configure the server in your env.php file
+
+    'queue' =>
+      array (
+        'amqp' =>
+        array (
+          'host' => 'magento2_rabbitmq_1',
+          'port' => 5672,
+          'user' => 'guest',
+          'password' => 'guest',
+          'virtualhost' => '/'
+         ),
+      ),
+
+After installing the module run setup:upgrade to create the message queue. Confirm the message queue exists with
+
+    bin/magento queue:consumers:list
+
+Start the message queue consumer with
+
+    bin/magento queue:consumers:start elgentos_magento_lcp_product_prewarm
+
+To test dynamic updating of the cache edit and save a configurable product (parent or child)
+
+You will see the prewarm process updating the cache
+
+    Processing 67..
+    Prewarming
+    Prewarming MH01 for store en (1/2)
+    Prewarming MH01 for store de (2/2)
+    Done prewarming
+
+You can run the consumer as a background process. You may need to manage the consumer with a supervisor process to ensure it always runs. Alternatively if you are using Docker the consumer can run as a standalone container set to always restart.
+
+## Release Notes
+0.4.0 - gaiterjones - 04.2020  
+Compatibility with Magento 2.3.x using built in AQMP/RabbitMQ integration  
+Removed requirement for renatocason/magento2-module-mq  
+Updated swatch-renderer-mixin updateBaseImage  
+Disabled configurable-customer-data from requirejs orginally used to auto select first option, not working in 2.3.x  
+Added option to disable cache per customer group so that group 0 is always used. Use this if you do not have customer group pricing  

@@ -1,14 +1,13 @@
 <?php
 
-namespace Elgentos\LargeConfigProducts\Model;
+namespace Elgentos\LargeConfigProducts\Model\MessageQueues;
 
+use Elgentos\LargeConfigProducts\Model\Prewarmer;
 use Magento\Framework\App\Config\ScopeConfigInterface;
-use Magento\Mtf\Config\FileResolver\ScopeConfig;
 use Psr\Log\LoggerInterface;
-use Rcason\Mq\Api\ConsumerInterface;
 use Symfony\Component\Process\Process;
 
-class Consumer implements ConsumerInterface
+class Consumer
 {
     const PREWARM_PROCESS_TIMEOUT = 300;
 
@@ -44,9 +43,13 @@ class Consumer implements ConsumerInterface
     }
 
     /**
-     * {@inheritdoc}
+     * Process message queue.
+     *
+     * @param string $productId
+     *
+     * @return void
      */
-    public function process($productId)
+    public function processMessage(string $productId)
     {
         echo sprintf('Processing %s..', $productId).PHP_EOL;
 

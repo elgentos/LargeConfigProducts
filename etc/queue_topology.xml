@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework-message-queue:etc/topology.xsd">    
+    <!-- name : A unique ID for the exchange  -->
+    <!-- type : Specifies the type of exchange. Must be topic -->
+    <!-- connection: For AMQP connections, a string that identifies the connection. For MySQL connections, the connection name must be db -->
+    <exchange name="elgentos.magento.lcp.product.prewarm" type="topic" connection="amqp">
+        <!-- id: A unique ID for this binding -->
+        <!-- topic: The name of a topic -->
+        <!-- destinationType: Must be queue -->
+        <!-- destination: Identifies the name of a queue -->
+        <binding id="elgentos_magento_lcp_product_prewarm" topic="elgentos.magento.lcp.product.prewarm" destinationType="queue" destination="elgentos_magento_lcp_product_prewarm"/>
+    </exchange>
+</config>
