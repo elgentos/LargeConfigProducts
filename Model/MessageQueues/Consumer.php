@@ -67,15 +67,12 @@ class Consumer
         }
 
         try {
-
             $cacheKey = 'LCP_PRODUCT_X_'.$productId;
 
             // consumer throttling - prevents boring situations
             if ($this->credis->exists($cacheKey)) {
                 echo 'Skipping - last process < '.self::PREWARM_THROTTLE_TTL.'s'.PHP_EOL;
-
             } else {
-
                 $process = new Process(sprintf('php %s/bin/magento lcp:prewarm -p %s --force=true', $absolutePath, $productId), null, null, null, self::PREWARM_PROCESS_TIMEOUT);
                 $process->run();
 
@@ -84,7 +81,6 @@ class Consumer
 
                 echo $process->getOutput();
             }
-
         } catch (\Exception $e) {
             $this->logger->critical($e->getMessage());
         }
