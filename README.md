@@ -1,8 +1,7 @@
+
 # Elgentos_LargeConfigProducts
 
 This extension is built to work around the problems Magento 2 is causing when using configurable products with extremely large amounts of simple products associated to it. Magento 2 can handle up to around 3000 associated simple products pretty well. Above that, it becomes extremely slow and sometimes unusable (such as webserver timeouts).
-
-This version is only compatible with Magento 2.3.X
 
 ## Example
 
@@ -20,7 +19,7 @@ When the product page is loaded and there is no cache entry, it will create it t
 
 In the backend [we use DOMDocument's and the `LIBXML_PARSEHUGE` constant](https://github.com/elgentos/LargeConfigProducts/blob/0.1.3/View/TemplateEngine/Xhtml/Template.php) to handle the extremely large XML structure.
 
-This extension is free to use. If you find any bugs, please let us know. It has been tested on Magento 2.2.2 on PHP 7.0.
+This extension is free to use. If you find any bugs, please let us know. It has been tested on Magento 2.3.3 on PHP 7.3.
 
 ## Console command
 This extension comes with a console command, `php bin/magento lcp:prewarm`. This console command pre-warms the JSON blobs so your customers don't have to wait for the cache to build up on the first hit on the product page.
@@ -72,12 +71,21 @@ You will see the prewarm process updating the cache
     Prewarming MH01 for store de (2/2)
     Done prewarming
 
-You can run the consumer as a background process. You may need to manage the consumer with a supervisor process to ensure it always runs. Alternatively if you are using Docker the consumer can run as a standalone container set to always restart.
+You can run the consumer as a background process. You may need to manage the consumer with a supervisor process to ensure it remains running. Alternatively if you are using Docker the consumer can run as a standalone container set to always restart.
 
-## Release Notes
-0.4.0 - gaiterjones - 04.2020  
-Compatibility with Magento 2.3.x using built in AQMP/RabbitMQ integration  
-Removed requirement for renatocason/magento2-module-mq  
-Updated swatch-renderer-mixin updateBaseImage  
-Disabled configurable-customer-data from requirejs orginally used to auto select first option, not working in 2.3.x  
-Added option to disable cache per customer group so that group 0 is always used. Use this if you do not have customer group pricing  
+### Changelog
+
+0.4.1
+
+ - Throttle consumer process to avoid replicating product prewarm
+
+0.4.0
+ - Compatibility with Magento 2.3.x using built in AQMP/RabbitMQ
+   integration
+  - Removed requirement for renatocason/magento2-module-mq
+   - Updated swatch-renderer-mixin updateBaseImage
+   - Disabled configurable-customer-data from requirejs orginally used to auto
+   select first option, not working in 2.3.x
+   - Added option to disable
+   cache per customer group so that group 0 is always used. Use this if
+   you do not have customer group pricing
