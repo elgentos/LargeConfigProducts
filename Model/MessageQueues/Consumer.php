@@ -2,10 +2,9 @@
 
 namespace Elgentos\LargeConfigProducts\Model\MessageQueues;
 
-use Elgentos\LargeConfigProducts\Model\Prewarmer;
 use Elgentos\LargeConfigProducts\Cache\CredisClientFactory;
+use Elgentos\LargeConfigProducts\Model\Prewarmer;
 use Magento\Framework\App\Config\ScopeConfigInterface;
-use Magento\Mtf\Config\FileResolver\ScopeConfig;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Process\Process;
 
@@ -50,9 +49,6 @@ class Consumer
         $this->credis = $credisClientFactory->create();
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function processMessage(string $productId)
     {
         echo sprintf('Processing %s..', $productId).PHP_EOL;
@@ -72,11 +68,10 @@ class Consumer
 
         try {
 
-            $cacheKey='LCP_PRODUCT_X_'.$productId;
+            $cacheKey = 'LCP_PRODUCT_X_'.$productId;
 
             // consumer throttling - prevents boring situations
-            if ($this->credis->exists($cacheKey))
-            {
+            if ($this->credis->exists($cacheKey)) {
                 echo 'Skipping - last process < '.self::PREWARM_THROTTLE_TTL.'s'.PHP_EOL;
 
             } else {
@@ -85,7 +80,7 @@ class Consumer
                 $process->run();
 
                 $this->credis->set($cacheKey, (new \DateTime())->format('d-m-Y h:i:s'));
-                $this->credis->expire($cacheKey,self::PREWARM_THROTTLE_TTL);
+                $this->credis->expire($cacheKey, self::PREWARM_THROTTLE_TTL);
 
                 echo $process->getOutput();
             }
