@@ -19,7 +19,7 @@ When the product page is loaded and there is no cache entry, it will create it t
 
 In the backend [we use DOMDocument's and the `LIBXML_PARSEHUGE` constant](https://github.com/elgentos/LargeConfigProducts/blob/0.1.3/View/TemplateEngine/Xhtml/Template.php) to handle the extremely large XML structure.
 
-This extension is free to use. If you find any bugs, please let us know. It has been tested on Magento 2.3.3 on PHP 7.3.
+This extension is free to use. If you find any bugs, please let us know. It has been tested on Magento 2.4.0 on PHP 7.4.
 
 ## Console command
 This extension comes with a console command, `php bin/magento lcp:prewarm`. This console command pre-warms the JSON blobs so your customers don't have to wait for the cache to build up on the first hit on the product page.
@@ -32,7 +32,7 @@ The command has a few options;
 
 `--force true` - force the prewarmer to overwrite existing entries. Otherwise the prewarmer will skip product/storecode combinations that already have an entry.
 
-## Magento 2.3.X
+## Magento 2.3.X / 2.4.X
 Magento 2.3.0 includes integrated message queue management using RabbitMQ, this has replaced the renatocason/magento2-module-mq module used for dynamic pre warming of configurable products after saving.
 
 To use RabbitMQ messaging with this module you will require a RabbitMQ server accessible by Magento.
@@ -74,18 +74,16 @@ You will see the prewarm process updating the cache
 You can run the consumer as a background process. You may need to manage the consumer with a supervisor process to ensure it remains running. Alternatively if you are using Docker the consumer can run as a standalone container set to always restart.
 
 ### Changelog
+0.3.6
+ - Magento 2.3.5 / 2.4.0 compatibility
 
-0.4.1
-
+0.3.5
  - Throttle consumer process to avoid replicating product prewarm
 
-0.4.0
+0.3.4
  - Compatibility with Magento 2.3.x using built in AQMP/RabbitMQ
    integration
-  - Removed requirement for renatocason/magento2-module-mq
-   - Updated swatch-renderer-mixin updateBaseImage
-   - Disabled configurable-customer-data from requirejs orginally used to auto
-   select first option, not working in 2.3.x
-   - Added option to disable
-   cache per customer group so that group 0 is always used. Use this if
-   you do not have customer group pricing
+ - Removed requirement for renatocason/magento2-module-mq
+ - Updated swatch-renderer-mixin updateBaseImage
+ - Disabled configurable-customer-data from requirejs orginally used to auto select first option, not working in 2.3.x
+ - Added option to disable cache per customer group so that group 0 is always used. Use this if you do not have customer group pricing
