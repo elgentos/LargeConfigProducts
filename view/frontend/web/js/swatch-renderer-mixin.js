@@ -48,21 +48,41 @@ define([
                 });
             },
 
-            updateBaseImage: function (images, context, isInProductView, eventName) {
+            updateBaseImage: function (images, context, isInProductView) {
+
                 // If no images are set, do not replace existing image
                 if (images.length > 0 && images[0].full == null) {
                     return;
                 }
 
-                var gallery = context.find(this.options.mediaGallerySelector).data('gallery');
+                var justAnImage = images[0],
+                    initialImages = this.options.mediaGalleryInitial,
+                    imagesToUpdate,
+                    gallery = context.find(this.options.mediaGallerySelector).data('gallery'),
+                    isInitial;
 
-                if (eventName === undefined) {
-                    this.processUpdateBaseImage(images, context, isInProductView, gallery);
-                } else {
-                    context.find(this.options.mediaGallerySelector).on('gallery:loaded', function (loadedGallery) {
-                        loadedGallery = context.find(this.options.mediaGallerySelector).data('gallery');
-                        this.processUpdateBaseImage(images, context, isInProductView, loadedGallery);
-                    }.bind(this));
+                if (isInProductView) {
+                    if (_.isUndefined(gallery)) {
+                        context.find(this.options.mediaGallerySelector).on('gallery:loaded', function () {
+                            this.updateBaseImage(images, context, isInProductView);
+                        }.bind(this));
+
+                        return;
+                    }
+
+                    imagesToUpdate = images.length ? this._setImageType($.extend(true, [], images)) : [];
+                    isInitial = _.isEqual(imagesToUpdate, initialImages);
+
+                    if (this.options.gallerySwitchStrategy === 'prepend' && !isInitial) {
+                        imagesToUpdate = imagesToUpdate.concat(initialImages);
+                    }
+
+                    imagesToUpdate = this._setImageIndex(imagesToUpdate);
+
+                    gallery.updateData(imagesToUpdate);
+                    this._addFotoramaVideoEvents(isInitial);
+                } else if (justAnImage && justAnImage.img) {
+                    context.find('.product-image-photo').attr('src', justAnImage.img);
                 }
             },
 
