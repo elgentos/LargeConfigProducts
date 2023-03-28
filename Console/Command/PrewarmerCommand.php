@@ -98,5 +98,7 @@ class PrewarmerCommand extends Command
         $output->writeln($result);
 
         $output->writeln('Done prewarming');
+
+        return 0;
     }
 }
