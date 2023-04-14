@@ -9,8 +9,13 @@ define([
             _create: function () {
                 var that = this;
                 var productData = this._determineProductData();
+                var baseUrl=this.options.baseUrl;
+				if (baseUrl === undefined) { 
+					baseUrl=window.location.origin + '/';
+					//console.log('baseUrl ' + baseUrl);
+				}  
                 $.ajax({
-                    url: this.options.baseUrl + 'lcp/fetch/productOptions',
+                    url: baseUrl + 'lcp/fetch/productOptions',
                     type: 'GET',
                     dataType: 'json',
                     data: {
